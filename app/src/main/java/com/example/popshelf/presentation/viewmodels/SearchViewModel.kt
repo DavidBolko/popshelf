@@ -2,14 +2,9 @@ package com.example.popshelf.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.popshelf.data.BookApi
-import com.example.popshelf.data.bookApi
-import com.example.popshelf.data.gameApi
-import com.example.popshelf.data.repository.BookRepositoryImpl
 import com.example.popshelf.domain.useCases.GetBookUseCase
 import com.example.popshelf.domain.useCases.GetGameUseCase
 import com.example.popshelf.presentation.UIState
-import com.example.popshelf.presentation.components.GameItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

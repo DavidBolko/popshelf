@@ -2,6 +2,7 @@ package com.example.popshelf.presentation.viewmodels.factories
 
 import com.example.popshelf.domain.useCases.GetBookUseCase
 import com.example.popshelf.domain.useCases.GetGameUseCase
+import com.example.popshelf.presentation.viewmodels.DetailViewModel
 import com.example.popshelf.presentation.viewmodels.SearchViewModel
 
 interface Factory<T> {
@@ -13,3 +14,12 @@ class SearchViewModelFactory(private val searchBookUseCase: GetBookUseCase, priv
         return SearchViewModel(searchBookUseCase, searchGameUseCase)
     }
 }
+
+/*
+class DetailViewModelFactory(private val id: String): Factory<DetailViewModel>{
+    override fun create(): DetailViewModel {
+        return DetailViewModel(id)
+    }
+}
+
+ */

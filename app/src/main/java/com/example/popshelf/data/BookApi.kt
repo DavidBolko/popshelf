@@ -16,9 +16,9 @@ interface BookApi {
 
 data class Book(
     val title: String,
-    val author_name: List<String>?,
+    val author_name: List<String>,
     val cover_i: Int?,
-    val key: String?,
+    val key: String,
     val first_publish_year: Int
 )
 

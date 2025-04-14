@@ -1,5 +1,6 @@
 package com.example.popshelf.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.presentation.UIState
 import com.example.popshelf.presentation.components.MediaItem
@@ -35,7 +37,7 @@ import com.example.popshelf.presentation.viewmodels.SearchViewModel
 import com.example.popshelf.presentation.viewmodels.factories.SearchViewModelFactory
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, viewModel: SearchViewModel) {
+fun SearchScreen(modifier: Modifier = Modifier, viewModel: SearchViewModel, nav:NavController) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
@@ -75,7 +77,7 @@ fun SearchScreen(modifier: Modifier = Modifier, viewModel: SearchViewModel) {
             }
 
             is UIState.Success -> {
-                renderItems((uiState as UIState.Success).data)
+                renderItems((uiState as UIState.Success).data, nav)
                 /*
                 when(selectedTabIndex){
                     0-> renderBooks((uiState as UIState.Success).data)
@@ -96,14 +98,15 @@ fun SearchScreen(modifier: Modifier = Modifier, viewModel: SearchViewModel) {
 }
 
 @Composable
-fun renderItems(items: List<Any>){
+fun renderItems(items: List<Any>, nav:NavController){
     val items = items.filterIsInstance<MediaItem>()
     LazyColumn {
         items(items) { item ->
-            MediaItem(item)
+            MediaItem(item, openDetail = { nav.navigate("detail/${item.id}") })
         }
     }
 }
+
 /*
 @Composable
 fun renderBooks(items: List<Any>){
