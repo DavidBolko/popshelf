@@ -30,12 +30,8 @@ import com.example.popshelf.ui.theme.PopshelfTheme
 
 
 class MainActivity : ComponentActivity() {
-    private lateinit var searchViewModel: SearchViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val appContainer = (application as PopshelfApplication).appContainer
-        searchViewModel = appContainer.searchViewModelFactory.create();
 
         setContent {
             val navController = rememberNavController()
@@ -47,14 +43,20 @@ class MainActivity : ComponentActivity() {
                             HomeScreen()
                         }
                         composable("search"){
-                            SearchScreen(viewModel = searchViewModel, nav = navController)
+                            val viewModel: SearchViewModel = viewModel(
+                                factory = SearchViewModel.Factory,
+                            )
+                            SearchScreen(viewModel = viewModel, nav = navController)
                         }
                         composable("add"){
                             AddScreen(modifier = Modifier, navController)
                         }
                         composable(
-                            "detail/{id}",
-                            arguments = listOf(navArgument("id") { type = NavType.StringType })
+                            "detail/{id}/{mediaType}",
+                            arguments = listOf(
+                                navArgument("id") { type = NavType.StringType },
+                                navArgument("mediaType") { type = NavType.StringType }
+                            )
                         ) { backStackEntry ->
                             val viewModel: DetailViewModel = viewModel(
                                 factory = DetailViewModel.Factory,

@@ -4,19 +4,23 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.popshelf.data.local.entity.BookEntity
 
 @Dao
 interface BookDao {
     @Insert
-    fun insert(book: BookEntity)
+    suspend fun insert(book: BookEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(books: List<BookEntity>)
+    suspend fun insertAll(books: List<BookEntity>)
 
     @Query("SELECT * FROM books WHERE LOWER(title) LIKE '%' || LOWER(:name) || '%'")
-    fun findByName(name: String): List<BookEntity>
+    suspend fun findByName(name: String): List<BookEntity>
 
     @Query("SELECT * FROM books WHERE id = :id")
-    fun findById(id: String): BookEntity
+    suspend fun findById(id: String): BookEntity
+
+    @Query("UPDATE Books SET desc = :newDesc where id = :id")
+    suspend fun updateDesc(id: String, newDesc: String): Void
 }

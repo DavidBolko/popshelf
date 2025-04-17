@@ -1,7 +1,14 @@
 package com.example.popshelf.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.popshelf.PopshelfApplication
+import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.useCases.GetBookUseCase
 import com.example.popshelf.domain.useCases.GetGameUseCase
 import com.example.popshelf.presentation.UIState
@@ -13,11 +20,15 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class SearchViewModel(private val searchBookUseCase: GetBookUseCase, private val searchGameUseCase: GetGameUseCase) : ViewModel() {
-    private val _uiState = MutableStateFlow<UIState<List<Any>>>(UIState.Loading)
-    val uiState: StateFlow<UIState<List<Any>>> = _uiState
+    private val _uiState = MutableStateFlow<UIState<List<MediaItem>>>(UIState.Loading)
+    val uiState: StateFlow<UIState<List<MediaItem>>> = _uiState
+
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
+
     private val _searchType = MutableStateFlow(0)
+    val searchType: StateFlow<Int> = _searchType
 
     fun updateSearchQuery(query: String, type: Int) {
         _searchQuery.value = query
@@ -55,9 +66,22 @@ class SearchViewModel(private val searchBookUseCase: GetBookUseCase, private val
         _uiState.value = UIState.Loading
         try {
             val foundGames = searchGameUseCase.execute(query)
+            Log.d("Error", foundGames.size.toString())
             _uiState.value = UIState.Success(foundGames)
+
         } catch (e: Exception) {
             _uiState.value = UIState.Error("Chyba pri načítaní úloh.")
+        }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication
+                val searchBookUseCase = app.appContainer.searchBookUseCase
+                val searchGameUseCase = app.appContainer.searchGameUseCase
+                SearchViewModel(searchBookUseCase, searchGameUseCase)
+            }
         }
     }
 }

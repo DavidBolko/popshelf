@@ -5,5 +5,6 @@ data class MediaItem(
     val author: String,
     val cover:String,
     val id:String,
-    val publishYear: Int
+    val publishYear: Int,
+    val desc: String
 )

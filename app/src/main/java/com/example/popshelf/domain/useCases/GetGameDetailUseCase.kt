@@ -6,8 +6,8 @@ import com.example.popshelf.BuildConfig
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.repository.GameRepository
 
-class GetGameUseCase(private val gameRepository: GameRepository) {
-    suspend fun execute(query: String): List<MediaItem> {
-        return gameRepository.findGamesByTitle(query);
+class GetGameDetailUseCase(private val gameRepository: GameRepository) {
+    suspend fun execute(id: String): MediaItem {
+        return gameRepository.getGameDetails(id);
     }
 }
