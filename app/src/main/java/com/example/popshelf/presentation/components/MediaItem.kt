@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,13 +22,16 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.popshelf.R
-import com.example.popshelf.data.Book
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.presentation.MediaType
 
 @Composable
 fun MediaItem(item: MediaItem, openDetail: ()->Unit, mediaType: MediaType) {
-    Card(modifier = Modifier.fillMaxWidth().padding(8.dp, 8.dp, 8.dp, bottom = 2.dp).clickable { openDetail() }){
+    Card(modifier = Modifier.fillMaxWidth().padding(8.dp, 8.dp, 8.dp, bottom = 2.dp).clickable { openDetail() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+    )){
         Row(modifier = Modifier.padding(8.dp)){
             //val image = "https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg", //real obrazok z API
             val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
@@ -36,7 +41,7 @@ fun MediaItem(item: MediaItem, openDetail: ()->Unit, mediaType: MediaType) {
 
             Column {
                 Text(text = item.title, maxLines = 1, overflow = TextOverflow.Clip)
-                if(mediaType != MediaType.Games)Text(text = item.author.toString(), fontSize = 15.sp, fontWeight = FontWeight.Thin)
+                if(mediaType != MediaType.GAMES)Text(text = item.author.toString(), fontSize = 15.sp, fontWeight = FontWeight.Thin)
                 Text(text = item.publishYear.toString(), fontSize = 10.sp, fontWeight = FontWeight.Thin)
             }
         }

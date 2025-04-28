@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -35,6 +37,7 @@ import coil.request.ImageRequest
 import com.example.popshelf.R
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.presentation.UIState
+import com.example.popshelf.presentation.components.Rating
 import com.example.popshelf.presentation.validateState
 import com.example.popshelf.presentation.viewmodels.DetailViewModel
 
@@ -50,29 +53,37 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, viewModel: D
     Scaffold(
         topBar = { TopAppBar(title = { Text("Detail") }, navigationIcon = {
             IconButton(onClick = { nav.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Späť"
-                )
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Späť")
             }
         }) },
-        floatingActionButton = { FloatingActionButton(onClick = {nav.navigate("add")}) { Icon(Icons.Filled.Add, "Add to collection") } }
+        floatingActionButton = {
+            if (state is UIState.Success && viewModel.fromShelf) {
+                val mediaItem = state.data
+                FloatingActionButton(
+                    onClick = {
+                        nav.navigate("add/${mediaItem.id}/${viewModel.mediaType}")
+                    }
+                ) {
+                    Icon(Icons.Filled.Add, "Add to collection")
+                }
+            }
+        }
     )
     {padding ->
         validateState(state) {item->
-            val mediaItem = (state as UIState.Success).data
-            Column(Modifier.padding(padding).padding(vertical = 16.dp, horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.padding(padding).padding(vertical = 16.dp, horizontal = 24.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row() {
                     AsyncImage(modifier = Modifier.height(200.dp), model = image, contentDescription = "Žiadne pridane knižky", imageLoader = imageLoader)
                     Column(modifier = Modifier.padding(horizontal = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(mediaItem.title, fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                        Text(mediaItem.author.toString(), fontSize = 16.sp)
-                        Text(mediaItem.publishYear.toString())
+                        Text(item.title, fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                        Text(item.author, fontSize = 16.sp)
+                        Text(item.publishYear.toString())
+                        Rating(item.rating)
                     }
                 }
                 Column() {
                     Text("Description", fontWeight = FontWeight.Medium)
-                    Text(textAlign = TextAlign.Justify, text=mediaItem.desc)
+                    Text(textAlign = TextAlign.Justify, text=item.desc)
                 }
             }
         }

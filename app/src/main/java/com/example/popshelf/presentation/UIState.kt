@@ -35,5 +35,6 @@ fun <T> validateState(uiState: UIState<T>, composable: @Composable (T) -> Unit){
                 Text(text = "Chyba: $message", color = Color.Red, fontSize = 18.sp)
             }
         }
+
     }
 }

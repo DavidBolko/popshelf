@@ -1,8 +1,8 @@
 package com.example.popshelf.data.repository
 
 import com.Secrets
-import com.example.popshelf.data.GameApi
-import com.example.popshelf.data.authService
+import com.example.popshelf.data.remote.GameApi
+import com.example.popshelf.data.remote.authService
 import com.example.popshelf.data.local.dao.GameDao
 import com.example.popshelf.data.toGameEntity
 import com.example.popshelf.data.toMediaItem
@@ -45,11 +45,7 @@ class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: Game
     }
 
     private suspend fun getDeveloperNameFromInvolvedComp(involvedIds: String, token: String): String {
-        val ids = involvedIds
-            .removePrefix("[")
-            .removeSuffix("]")
-            .split(",")
-            .mapNotNull { it.trim().toIntOrNull() }
+        val ids = involvedIds.removePrefix("[").removeSuffix("]").split(",").mapNotNull { it.trim().toIntOrNull() }
 
         if (ids.isEmpty()) return "No developer known."
 
@@ -72,6 +68,6 @@ class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: Game
                 .toRequestBody("text/plain".toMediaTypeOrNull())
         )
 
-        return companies.mapNotNull { it.name }.joinToString(", ").ifBlank { "No developer known." }
+        return companies.map { it.name }.joinToString(", ").ifBlank { "No developer known." }
     }
 }

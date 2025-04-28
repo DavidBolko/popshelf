@@ -9,34 +9,41 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Color(0xFF9AA0FF),
+    onPrimary = Color(0xFF1C1C3A),
+    primaryContainer = Color(0xFF3C3F66),
+    secondary = Color(0xFF72B2F5),
+    onSecondary = Color(0xFF000D1A),
+    background = Color(0xFF181A2C),
+    onBackground = Color(0xFFE4E6FF),
+    surface = Color(0xFF20223A),
+    onSurface = Color(0xFFE4E6FF),
+    surfaceVariant = Color(0xFF2A2D4F),
+    onSurfaceVariant = Color(0xFFE0E2F0),
+    outline = Color(0xFF5F6387),
+    inverseSurface = Color(0xFFE4E6FF),
+    inverseOnSurface = Color(0xFF1B1C2E)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Color(0xFF5E60CE),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFE0E0FF),
+    secondary = Color(0xFF5390D9),
+    onSecondary = Color(0xFFFFFFFF),
+    background = Color(0xFFFAFAFF),
+    onBackground = Color(0xFF2A2A45),
+    surface = Color(0xFFF2F3FF),
+    onSurface = Color(0xFF2A2A45)
 )
 
 @Composable
 fun PopshelfTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

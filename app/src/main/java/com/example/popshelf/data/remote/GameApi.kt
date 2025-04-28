@@ -1,5 +1,9 @@
-package com.example.popshelf.data
+package com.example.popshelf.data.remote
 
+import com.example.popshelf.data.dto.AccessTokenResponse
+import com.example.popshelf.data.dto.Game
+import com.example.popshelf.data.dto.companyResponse
+import com.example.popshelf.data.dto.involvedCompaniesResponse
 import com.google.gson.annotations.SerializedName
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -7,12 +11,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import retrofit2.http.Query
-import java.util.Date
 
 private val authRetrofit = Retrofit.Builder().baseUrl("https://id.twitch.tv/").addConverterFactory(GsonConverterFactory.create()).build()
 val authService = authRetrofit.create(GameApiAuth::class.java)
@@ -56,30 +57,3 @@ interface GameApiAuth {
     ): AccessTokenResponse
 }
 
-data class AccessTokenResponse(
-    @SerializedName("access_token") val accessToken: String,
-    @SerializedName("expires_in") val expiresIn: Int,
-    @SerializedName("token_type") val tokenType: String
-)
-
-data class involvedCompaniesResponse(
-    val company: Int,
-    val developer: Boolean
-)
-
-data class companyResponse(
-    val name: String
-)
-
-
-data class Game(
-    val id: Long,
-    val name: String,
-    val summary: String?,
-    val involved_companies: List<Int>?,
-    val cover: Int?
-)
-
-data class GameSearchResponse(
-    val results: List<Game> = emptyList()
-)

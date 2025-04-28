@@ -9,37 +9,38 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.popshelf.PopshelfApplication
 import com.example.popshelf.domain.MediaItem
-import com.example.popshelf.domain.useCases.GetMediaDetailUseCase
-import com.example.popshelf.presentation.MediaType
+import com.example.popshelf.domain.repository.ShelfItemRepositary
 import com.example.popshelf.presentation.UIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, private val savedStateHandle: SavedStateHandle): ViewModel() {
-    private val state = MutableStateFlow<UIState<MediaItem>>(UIState.Loading)
-    val data: StateFlow<UIState<MediaItem>> = state
+class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, private val savedStateHandle: SavedStateHandle) : ViewModel() {
+    private val _state = MutableStateFlow<UIState<List<MediaItem>>>(UIState.Loading)
+    val state: StateFlow<UIState<List<MediaItem>>> = _state
+
 
     private val id: String = savedStateHandle["id"] ?: ""
-    val mediaType: String = savedStateHandle["mediaType"] ?: "Books"
-    val fromShelf: Boolean = savedStateHandle["fromShelf"] ?: false
+    val name: String = savedStateHandle["name"] ?: "Shelf"
+
     init {
         viewModelScope.launch {
             try {
-                val item = getMediaDetailUseCase.execute(MediaType.valueOf(mediaType), id)
-                state.value = UIState.Success(item)
+                _state.value = UIState.Success(shelfItemRepositary.getShelfItems(id.toInt()))
             } catch (e: Exception) {
-                state.value = UIState.Error("Chyba pri načítaní.")
+                _state.value = UIState.Error("Chyba pri načítaní položiek poličky.")
             }
         }
     }
+
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer
-                DetailViewModel(app.getMediaDetailUseCase,  savedStateHandle)
+                ShelfViewModel(app.shelfItemRepository, savedStateHandle)
             }
         }
     }

@@ -22,6 +22,9 @@ interface GameDao {
     @Query("SELECT * FROM Games WHERE id = :id")
     suspend fun findById(id: String): GameEntity
 
+    @Query("SELECT * FROM Games WHERE id IN (:ids)")
+    suspend fun findById(ids: List<String>): List<GameEntity>
+
     @Query("UPDATE Games SET authors = :dev where id = :id")
     suspend fun updateDeveloper(id: String, dev: String): Void
 }
