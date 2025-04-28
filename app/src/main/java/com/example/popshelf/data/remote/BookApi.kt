@@ -1,8 +1,11 @@
-package com.example.popshelf.data
+package com.example.popshelf.data.remote
 
+import com.example.popshelf.data.dto.BookSearchResponse
+import com.example.popshelf.data.dto.WorkDetailResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -12,16 +15,9 @@ val bookApi = retrofit.create(BookApi::class.java)
 interface BookApi {
     @GET("search.json")
     suspend fun searchBooks(@Query("title") title: String): BookSearchResponse
+
+
+    @GET("works/{workId}.json")
+    suspend fun getWorkDetail(@Path("workId") workId: String): WorkDetailResponse
 }
 
-data class Book(
-    val title: String,
-    val author_name: List<String>?,
-    val cover_i: Int?,
-    val key: String?,
-    val first_publish_year: Int
-)
-
-data class BookSearchResponse(
-    val docs: List<Book> = emptyList()
-)
