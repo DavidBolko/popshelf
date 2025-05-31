@@ -1,17 +1,24 @@
 package com.example.popshelf.presentation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
 
+/***
+ * Class which represents individual states for UI events.
+ */
 sealed class UIEvent{
+
+    /**
+     * Event which is called when navigation should take user back.
+     */
     object NavigateBack : UIEvent()
+
+    /**
+     * Idle state.
+     */
     object Idle : UIEvent()
+
+    /**
+     * Error state with message which can be displayed.
+     * @param message - message which can be displayed as error message.
+     */
     data class Error(val message: String) : UIEvent()
 }

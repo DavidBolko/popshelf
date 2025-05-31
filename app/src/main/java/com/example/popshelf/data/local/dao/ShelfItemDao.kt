@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.popshelf.data.local.entity.BookEntity
-import com.example.popshelf.data.local.entity.ShelfEntity
 import com.example.popshelf.data.local.entity.ShelfItemEntity
 
 @Dao
@@ -22,6 +21,23 @@ interface ShelfItemDao {
     @Query("SELECT * FROM ShelfItemEntity WHERE shelfId = :shelfId")
     suspend fun getShelfItems(shelfId: Int): List<ShelfItemEntity>
 
+    @Query("SELECT * FROM ShelfItemEntity WHERE defaultShelf = :shelfId")
+    suspend fun getItemsFromDefaultShelf(shelfId: Int): List<ShelfItemEntity>
+
+    @Query("UPDATE ShelfItemEntity SET rating = :rating WHERE itemId = :itemId")
+    suspend fun updateRating(itemId: String, rating: Int)
+
     @Query("Select * from ShelfItemEntity where id = :id")
     suspend fun getItemById(id:String): ShelfItemEntity?
+
+
+    @Query("""
+        UPDATE ShelfItemEntity 
+        SET status = :status, rating = :rating, comment = :comment, shelfId = :shelfId
+        WHERE itemId = :itemId
+    """)
+    suspend fun updateItem(itemId: String, shelfId: Int, status: String, rating: Int, comment: String)
+
+    @Query("delete from ShelfItemEntity where itemId = :itemId")
+    suspend fun deleteItem(itemId: String)
 }

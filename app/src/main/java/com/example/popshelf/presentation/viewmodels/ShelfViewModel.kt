@@ -1,5 +1,6 @@
 package com.example.popshelf.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, private val savedStateHandle: SavedStateHandle) : ViewModel() {
+/***
+ * Viewmodel class for preserving and requesting data for ShelfViewModel
+ * @author David Bolko
+ * @property getMediaUseCase - use case class, which contact correct work repository based on selected media type.
+ * @param networkMonitor - class which observe network status of the device.
+ */
+class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _state = MutableStateFlow<UIState<List<MediaItem>>>(UIState.Loading)
     val state: StateFlow<UIState<List<MediaItem>>> = _state
 
@@ -26,6 +33,7 @@ class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, priva
     init {
         viewModelScope.launch {
             try {
+                Log.d("Error", id)
                 _state.value = UIState.Success(shelfItemRepositary.getShelfItems(id.toInt()))
             } catch (e: Exception) {
                 _state.value = UIState.Error("Chyba pri načítaní položiek poličky.")
@@ -40,7 +48,7 @@ class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, priva
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer
-                ShelfViewModel(app.shelfItemRepository, savedStateHandle)
+                ShelfViewModel(app.shelfItemRepo, savedStateHandle)
             }
         }
     }

@@ -7,29 +7,32 @@ import com.example.popshelf.data.local.dao.GameDao
 import com.example.popshelf.data.toGameEntity
 import com.example.popshelf.data.toMediaItem
 import com.example.popshelf.domain.MediaItem
+import com.example.popshelf.domain.NetworkStatusProvider
 import com.example.popshelf.domain.repository.GameRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: GameDao): GameRepository {
-    override suspend fun findGamesByTitle(title: String): List<MediaItem> {
-        val games = gameDao.findByName(title)
-
-        return if (games.isNotEmpty()) {
-            games.map { it.toMediaItem() }
+class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: GameDao, private val networkStatusProvider: NetworkStatusProvider): GameRepository {
+    override suspend fun getGamesByQuery(query: String, page: Int): List<MediaItem> {
+        return if (!networkStatusProvider.isOnline() || query.isEmpty()) {
+            gameDao.findByName(query).map { it.toMediaItem() }
         } else {
             val token = authService.getAccessToken(Secrets.idgb_id, Secrets.idgb_scrt).accessToken
             val apiGames = gameApi.getGames(
                 clientId = Secrets.idgb_id,
                 authHeader = "Bearer $token",
-                body = """search "$title";fields id, name, involved_companies, summary, cover;"""
-                    .trimIndent()
-                    .toRequestBody("text/plain".toMediaTypeOrNull())
+                body = """
+                search "$query";
+                fields id, name, involved_companies, summary, cover;
+                limit 20;
+                offset ${(page - 1) * 20};
+            """.trimIndent().toRequestBody("text/plain".toMediaTypeOrNull())
             )
 
             val mediaItems = apiGames.map { it.toMediaItem() }
             gameDao.insertAll(mediaItems.map { it.toGameEntity() })
-            mediaItems
+
+            return mediaItems
         }
     }
 

@@ -13,36 +13,42 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-
-class HomeViewModel(private val repositary: ShelfRepositary) : ViewModel() {
+/***
+ * Viewmodel class for preserving and requesting data for HomeViewModel
+ * @author David Bolko
+ * @property shelfRepositary - repository for items of individual shelves.
+ */
+class HomeViewModel(private val shelfRepositary: ShelfRepositary) : ViewModel() {
     private val _state = MutableStateFlow<UIState<List<Shelf>>>(UIState.Loading)
     val state: StateFlow<UIState<List<Shelf>>> = _state
 
-    fun fetch(){
+    init {
+        fetch()
+    }
+
+    private fun fetch(){
         viewModelScope.launch {
             try {
-                repositary.createDefaultShelves()
-                _state.value = UIState.Success(repositary.getAllShelves(true))
+                shelfRepositary.createDefaultShelves()
+                _state.value = UIState.Success(shelfRepositary.getAllShelves(true))
             } catch (e: Exception) {
                 _state.value = UIState.Error("Chyba pri načítaní poličiek.")
             }
         }
     }
 
+    /**
+     * Function which runs after editing/adding or deleting work from a shelf, it's re-fetching the home screen data..
+     */
     fun refresh() {
         fetch()
     }
-
-    init {
-        fetch()
-    }
-
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer
-                HomeViewModel(app.ShelfRepo)
+                HomeViewModel(app.shelfRepo)
             }
         }
     }

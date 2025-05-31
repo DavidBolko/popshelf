@@ -19,12 +19,18 @@ interface ShelfDao {
     suspend fun insertShelf(shelf: ShelfEntity)
 
     @Query("""
-    SELECT s.id, s.name, s.color, s.isSystem, s.image, COUNT(i.id) as itemCount
+    SELECT 
+        s.id, s.name, s.color, s.isSystem, s.image,
+        COUNT(distinct i.itemId) AS itemCount
     FROM ShelfEntity s
-    LEFT JOIN ShelfItemEntity i ON s.id = i.shelfId
-    WHERE (:isSystem = 0 AND s.isSystem = 0 OR :isSystem = 1)
-    GROUP BY s.id, s.name, s.color, s.isSystem
-    """)
+    LEFT JOIN ShelfItemEntity i 
+        ON (
+            (s.isSystem = 1 AND i.defaultShelf = s.id) OR
+            (s.isSystem = 0 AND i.shelfId = s.id)
+        )
+    WHERE (:isSystem = 1 OR s.isSystem = 0)
+    GROUP BY s.id, s.name, s.color, s.isSystem, s.image
+""")
     suspend fun getAllShelves(isSystem: Boolean = false): List<ShelfDto>
 
     @Query("Select * from ShelfEntity where name = :name")

@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">Popshelf</string>
     <string name="comment">Comment:</string>
+    <string name="description">Description:</string>
     <string name="add_to_collection">Add to collection</string>
+    <string name="edit">Edit</string>
     <string name="back">Back</string>
+    <string name="delete">Delete</string>
+    <string name="your_rating">Your rating:</string>
     <string name="rating">Rating:</string>
+    <string name="work_cover">Cover of work:</string>
 </resources>

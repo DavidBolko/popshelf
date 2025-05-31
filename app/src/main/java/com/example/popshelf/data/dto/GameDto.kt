@@ -1,14 +1,17 @@
 package com.example.popshelf.data.dto
 
 
-data class MovieDto(
+data class GameDto(
     val id: String,
     val title: String,
-    val author: String,
-    val cover:String,
-    val publishYear: Int,
-    val desc: String?,
-    val genres: String,
+    val authors: String,
+    val cover: String,
+    val released: Int,
+    val summary: String,
     val updatedAt: Long,
-    val rating: Int?
+    val rating: Int?,
+    val comment: String?,
+    val shelfId: Int = 0,
+    val status: String?
+
 )

@@ -10,5 +10,6 @@ data class GameEntity (
     val authors: String,
     val cover: String,
     val released: Int,
-    val summary: String
+    val summary: String,
+    val updatedAt: Long = 0L
 )

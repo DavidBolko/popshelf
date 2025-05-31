@@ -14,7 +14,6 @@ import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.Shelf
 import com.example.popshelf.domain.repository.ShelfItemRepositary
 import com.example.popshelf.domain.repository.ShelfRepositary
-import com.example.popshelf.domain.useCases.AddItemUseCase
 import com.example.popshelf.domain.useCases.GetMediaDetailUseCase
 import com.example.popshelf.presentation.MediaStatus
 import com.example.popshelf.presentation.MediaType
@@ -25,11 +24,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
-
-class AddItemViewModel(
-    private val addItemUseCase: AddItemUseCase,
+/***
+ * Viewmodel class for preserving and requesting data for AddEditScreen
+ * @author David Bolko
+ * @property shelfItemRepositary - repository for items of individual shelves.
+ * @property  getMediaDetailUseCase - use case class, which contact correct repository based on selected media type.
+ * @property  savedStateHandle - allows to access navigation arguments.
+ * @property  networkMonitor - class which observe network status of the device.
+ */
+class AddEditItemViewModel(
     private val shelfItemRepositary: ShelfItemRepositary,
     private val shelfRepositary: ShelfRepositary,
     private val getMediaDetailUseCase: GetMediaDetailUseCase,
@@ -87,6 +91,9 @@ class AddItemViewModel(
         }
     }
 
+    /**
+     * Function which run after user changed the status.
+     */
     fun onStatusSelected(status: MediaStatus) {
         _selectedStatus.value = status
         if (status != MediaStatus.FINISHED) {
@@ -94,18 +101,30 @@ class AddItemViewModel(
         }
     }
 
+    /**
+     * Function which run after user rewrote the comment.
+     */
     fun onCommentChanged(comment: String) {
         _comment.value = comment
     }
 
+    /**
+     * Function which run after user changed the shelf.
+     */
     fun onShelfSelected(shelf: String) {
         _selectedShelf.value = shelf
     }
 
+    /**
+     * Function which run after user changed the rating.
+     */
     fun onRatingSelected(value: Int) {
         _rating.value = value
     }
 
+    /**
+     * Function which run after clicking the confirm button during editing or adding a work.
+     */
     fun onConfirm() {
         val status = _selectedStatus.value
         val shelf = _selectedShelf.value
@@ -118,22 +137,9 @@ class AddItemViewModel(
                 if (item != null) {
                     if (isEdit) {
                         Log.d("sh", (shelves.find { it.name.equals(shelf) }?.id ?: shelfId).toString())
-                        shelfItemRepositary.updateShelfItem(
-                            itemId = item.id,
-                            shelfId = shelves.find { it.name.equals(shelf) }?.id ?: shelfId,
-                            status = status.title,
-                            rating = rating,
-                            comment = comment
-                        )
+                        shelfItemRepositary.updateShelfItem(itemId = item.id, shelfId = shelves.find { it.name == shelf }?.id ?: shelfId, status = status.title, rating = rating, comment = comment)
                     } else {
-                        addItemUseCase.execute(
-                            id = item.id,
-                            mediaType = MediaType.valueOf(mediaType).title,
-                            status = status.title,
-                            rating = rating,
-                            comment = comment,
-                            shelf = shelf
-                        )
+                        shelfItemRepositary.addShelfItem(id = item.id, mediaType = MediaType.valueOf(mediaType).title, status = status.title, rating = rating, comment = comment.ifEmpty { "" }, shelf = shelf)
                     }
                 }
                 _state.emit(UIEvent.NavigateBack)
@@ -149,10 +155,9 @@ class AddItemViewModel(
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer
-                AddItemViewModel(
-                    app.addItemUseCase,
-                    app.shelfItemRepository,
-                    app.ShelfRepo,
+                AddEditItemViewModel(
+                    app.shelfItemRepo,
+                    app.shelfRepo,
                     app.getMediaDetailUseCase,
                     savedStateHandle,
                     app.networkMonitor

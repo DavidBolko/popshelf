@@ -10,5 +10,6 @@ data class BookEntity (
     val author: String,
     val cover:String,
     val publishYear: Int,
-    val desc: String?
+    val desc: String?,
+    val updatedAt: Long = 0L
 )

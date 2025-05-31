@@ -1,11 +1,8 @@
 package com.example.popshelf.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -40,22 +36,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.popshelf.presentation.viewmodels.AddShelfViewModel
 
 
+/**
+ * Composable function which represents add shelf dialog
+ * @author David Bolko
+ * @param onDismiss onDismiss callback when user request to dismiss the dialog.
+ * @param addShelfViewModel viewmodel for fetching and preserving data for this screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddShelfDialog(onDismiss: () -> Unit, viewModel: AddShelfViewModel ) {
-    val name by viewModel.nameState.collectAsState()
-    val selectedColorKey by viewModel.selectedColorKey.collectAsState()
-    val isCreationAllowed by viewModel.isCreationAllowed.collectAsState()
+fun AddShelfDialog(onDismiss: () -> Unit, addShelfViewModel: AddShelfViewModel ) {
+    val name by addShelfViewModel.nameState.collectAsState()
+    val selectedColorKey by addShelfViewModel.selectedColorKey.collectAsState()
+    val isCreationAllowed by addShelfViewModel.isCreationAllowed.collectAsState()
     val selectedColor = colorOptions[selectedColorKey] ?: colorOptions["Pink"]!!
     val colorKeys = colorOptions.keys.toList()
 
@@ -73,7 +72,7 @@ fun AddShelfDialog(onDismiss: () -> Unit, viewModel: AddShelfViewModel ) {
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(value = name, onValueChange = { viewModel.onNameChange(it) }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth(), maxLines = 1)
+                OutlinedTextField(value = name, onValueChange = { addShelfViewModel.onNameChange(it) }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth(), maxLines = 1)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 var expanded by remember { mutableStateOf(false) }
@@ -96,7 +95,7 @@ fun AddShelfDialog(onDismiss: () -> Unit, viewModel: AddShelfViewModel ) {
                                     }
                                 },
                                 onClick = {
-                                    viewModel.onColorSelected(key)
+                                    addShelfViewModel.onColorSelected(key)
                                     expanded = false
                                 }
                             )
@@ -111,7 +110,7 @@ fun AddShelfDialog(onDismiss: () -> Unit, viewModel: AddShelfViewModel ) {
                         Text("Cancel")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { viewModel.createShelf(); onDismiss() },enabled = isCreationAllowed) {
+                    Button(onClick = { addShelfViewModel.createShelf(); onDismiss() },enabled = isCreationAllowed) {
                         Text("Add")
                     }
                 }

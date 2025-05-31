@@ -5,20 +5,34 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.popshelf.data.dto.MovieDto
 import com.example.popshelf.data.local.entity.BookEntity
 import com.example.popshelf.data.local.entity.GameEntity
+import com.example.popshelf.data.local.entity.MovieEntity
 
 @Dao
-interface GameDao {
-    @Insert
-    suspend fun insert(book: GameEntity)
+interface MovieDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(movie: MovieEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(games: List<GameEntity>)
+    suspend fun insertAll(movies: List<MovieEntity>)
 
-    @Query("SELECT * FROM Games WHERE LOWER(title) LIKE '%' || LOWER(:name) || '%'")
-    suspend fun findByName(name: String): List<GameEntity>
+    @Query("SELECT * FROM Movies WHERE LOWER(title) LIKE '%' || LOWER(:name) || '%'")
+    suspend fun findByName(name: String): List<MovieEntity>
 
+    @Query("""
+    SELECT m.id, m.title, m.author, m.cover, m.publishYear, m.`desc`, m.genres, m.updatedAt, s.rating, s.comment, s.shelfId, s.status
+    FROM Movies m
+    LEFT JOIN ShelfItemEntity s ON m.id = s.itemId
+    WHERE m.id = :id
+""")
+    suspend fun getById(id: String): MovieDto
+
+    @Query("SELECT * FROM Movies WHERE id IN (:ids)")
+    suspend fun getById(ids: List<String>): List<MovieEntity>
+
+    /*
     @Query("SELECT * FROM Games WHERE id = :id")
     suspend fun findById(id: String): GameEntity
 
@@ -27,4 +41,5 @@ interface GameDao {
 
     @Query("UPDATE Games SET authors = :dev where id = :id")
     suspend fun updateDeveloper(id: String, dev: String): Void
+    */
 }
