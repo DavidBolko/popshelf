@@ -1,14 +1,12 @@
 package com.example.popshelf.data.dto
 
 
-data class MovieDto(
+data class BookDto(
     val id: String,
     val title: String,
     val author: String,
-    val cover:String,
+    val cover: String,
     val publishYear: Int,
     val desc: String?,
-    val genres: String,
-    val updatedAt: Long,
     val rating: Int?
 )
