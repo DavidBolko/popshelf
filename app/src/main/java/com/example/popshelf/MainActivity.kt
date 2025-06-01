@@ -26,6 +26,11 @@ import com.example.popshelf.presentation.viewmodels.SearchViewModel
 import com.example.popshelf.presentation.viewmodels.ShelfViewModel
 import com.example.popshelf.ui.theme.PopshelfTheme
 
+/**
+ * The main activity of the Popshelf application.
+ *
+ * This activity sets the theme and contains the [NavHost] of the application.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             PopshelfTheme {
-                //Scaffold - Zakladny layout, ponúka nejaky topbar, obsah, bottom bar...
+                //Scaffold - Zakladny layout, nejaky topbar, obsah, bottom bar...
                 Scaffold(bottomBar = { NavigationBar(navController) }) { padding ->
                     NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(padding)) {
                         composable("home"){

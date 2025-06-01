@@ -1,6 +1,7 @@
 package com.example.popshelf.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,18 +27,20 @@ import com.example.popshelf.presentation.screens.calculateRating
 @Composable
 fun Rating(rating: Int, onChangeRating: ((Int) -> Unit)? = null){
     Card() {
-        Text(stringResource(R.string.your_rating))
-        Row(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-            (1..5).forEach { index ->
-                val icon = calculateRating(index, rating)
-                val tint = Color(0xFFFFC107)
+        Column(modifier = Modifier.fillMaxWidth().padding(4.dp)){
+            Text(stringResource(R.string.your_rating))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                (1..5).forEach { index ->
+                    val icon = calculateRating(index, rating)
+                    val tint = Color(0xFFFFC107)
 
-                if (onChangeRating != null) {
-                    IconButton(onClick = { if (rating == index) onChangeRating(0) else onChangeRating(index) }) {
+                    if (onChangeRating != null) {
+                        IconButton(onClick = { if (rating == index) onChangeRating(0) else onChangeRating(index) }) {
+                            Icon(imageVector = icon, contentDescription = "${stringResource(R.string.rating)} $index", modifier = Modifier.size(32.dp), tint = tint)
+                        }
+                    } else {
                         Icon(imageVector = icon, contentDescription = "${stringResource(R.string.rating)} $index", modifier = Modifier.size(32.dp), tint = tint)
                     }
-                } else {
-                    Icon(imageVector = icon, contentDescription = "${stringResource(R.string.rating)} $index", modifier = Modifier.size(32.dp), tint = tint)
                 }
             }
         }

@@ -2,7 +2,7 @@ package com.example.popshelf
 
 import android.content.Context
 import androidx.room.Room
-import com.example.popshelf.data.NetworkStatusProviderImpl
+import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.data.remote.bookApi
 import com.example.popshelf.data.remote.gameApi
 import com.example.popshelf.data.local.PopshelfDatabase
@@ -17,6 +17,7 @@ import com.example.popshelf.data.repository.GameRepositoryImpl
 import com.example.popshelf.data.repository.ShelfItemRepositoryImpl
 import com.example.popshelf.data.repository.ShelfRepositoryImpl
 import com.example.popshelf.data.repository.MovieRepositoryImpl
+import com.example.popshelf.domain.NetworkStatusProvider
 import com.example.popshelf.domain.repository.BookRepository
 import com.example.popshelf.domain.repository.GameRepository
 import com.example.popshelf.domain.repository.MovieRepository
@@ -35,7 +36,6 @@ import com.example.popshelf.domain.useCases.GetMediaUseCase
  * @property getMediaDetailUseCase instance of GetMediaDetailUseCase use case class.
  * @property getMediaUseCase instance of GetMediaUseCase use case class.
  */
-
 class AppContainer(private val context: Context) {
     private val db: PopshelfDatabase by lazy { Room.databaseBuilder(context, PopshelfDatabase::class.java, "popshelf_db").build() }
 
@@ -45,14 +45,17 @@ class AppContainer(private val context: Context) {
 
     private val shelfDao: ShelfDao by lazy{ db.shelfDao() }
     private val movieDao: MovieDao by lazy{ db.movieDao() }
-    private val networkStatusProvider = NetworkStatusProviderImpl(context)
     private val shelfItemDao: ShelfItemDao by lazy {db.shelfItemDao()}
+
+    private val monitor = NetworkMonitor(context)
+
+    private val networkStatusProvider: NetworkStatusProvider = monitor
+    val networkMonitor: NetworkMonitor = monitor
 
     private val bookRepo: BookRepository by lazy { BookRepositoryImpl(bookApi, bookDao, networkStatusProvider) }
     private val gameRepo: GameRepository by lazy { GameRepositoryImpl(gameApi, gameDao, networkStatusProvider) }
     private val movieRepo: MovieRepository by lazy { MovieRepositoryImpl(movieApi, movieDao, networkStatusProvider) }
 
-    val networkMonitor: NetworkMonitor by lazy { NetworkMonitor(context)}
     val getMediaDetailUseCase = GetMediaDetailUseCase(gameRepo, bookRepo, movieRepo)
     val getMediaUseCase = GetMediaUseCase(bookRepo, gameRepo, movieRepo)
     val shelfRepo: ShelfRepositary by lazy { ShelfRepositoryImpl(shelfDao) }

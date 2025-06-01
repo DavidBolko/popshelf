@@ -26,7 +26,7 @@ interface BookApi {
      * @return A list of [Book]s.
      */
     @GET("search.json")
-    suspend fun searchBooks(@Query("title") title: String, @Query("page") page: Int, @Query("limit") limit: Int): List<Book>
+    suspend fun searchBooks(@Query("title") title: String, @Query("page") page: Int, @Query("limit") limit: Int): BookSearchResponse
 
     /**
      * Retrieves detailed information about a specific book.
@@ -73,3 +73,6 @@ data class WorkDetailResponse(
     val subjects: List<String>?
 )
 
+data class BookSearchResponse(
+    val docs: List<Book>
+)

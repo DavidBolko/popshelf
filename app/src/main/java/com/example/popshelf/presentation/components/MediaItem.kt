@@ -49,8 +49,10 @@ fun MediaItem(item: MediaItem, openDetail: ()->Unit, mediaType: MediaType) {
 
             Column {
                 Text(text = item.title, maxLines = 1, overflow = TextOverflow.Clip)
-                if(mediaType != MediaType.GAMES)Text(text = item.author.toString(), fontSize = 15.sp, fontWeight = FontWeight.Thin)
-                Text(text = item.publishYear.toString(), fontSize = 10.sp, fontWeight = FontWeight.Thin)
+                if (item.author.isNotBlank() && !item.author.split(",").all { it.trim().toIntOrNull() != null }) {
+                    Text(text = item.author, fontSize = 15.sp, fontWeight = FontWeight.Thin)
+                }
+                Text(text = item.released.toString(), fontSize = 10.sp, fontWeight = FontWeight.Thin)
             }
         }
     }

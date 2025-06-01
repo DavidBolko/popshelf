@@ -10,7 +10,7 @@ import com.example.popshelf.presentation.MediaType
  * @property author the author or creator of the media item.
  * @property cover identifier of an image.
  * @property id a unique identifier for the media item.
- * @property publishYear the year the item was published or released.
+ * @property released the year the item was published or released.
  * @property desc description or summary of the media item.
  * @property mediaType type of media defined by [MediaType].
  * @property rating the user selected rating (range 1-5). Default is 0.
@@ -23,7 +23,7 @@ data class MediaItem(
     val author: String,
     val cover:String,
     val id:String,
-    val publishYear: Int,
+    val released: Int,
     val desc: String,
     val mediaType: MediaType,
     var rating: Int = 0,

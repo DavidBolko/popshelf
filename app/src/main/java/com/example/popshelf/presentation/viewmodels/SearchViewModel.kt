@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.popshelf.NetworkMonitor
+import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.PopshelfApplication
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.useCases.GetMediaUseCase
@@ -39,6 +39,10 @@ class SearchViewModel(private val getMediaUseCase: GetMediaUseCase, private val 
 
     val isConnected = networkMonitor.isConnected
 
+
+    /**
+     * This functions changes values of MutableStateFlows defined in this viewmodel, after values are changed in UI to reflect the change.
+     */
     fun updateSearchQuery(query: String, type: MediaType) {
         _searchQuery.value = query
         _searchType.value = type
@@ -46,6 +50,10 @@ class SearchViewModel(private val getMediaUseCase: GetMediaUseCase, private val 
     }
 
     init {
+        observeSearchQuery()
+    }
+
+    fun refresh(){
         observeSearchQuery()
     }
 

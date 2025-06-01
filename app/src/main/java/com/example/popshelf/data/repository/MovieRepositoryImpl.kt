@@ -1,6 +1,5 @@
 package com.example.popshelf.data.repository
 
-import android.util.Log
 import com.example.popshelf.data.local.dao.MovieDao
 import com.example.popshelf.data.local.entity.MovieEntity
 import com.example.popshelf.data.remote.TmdbApiService
@@ -33,7 +32,7 @@ class MovieRepositoryImpl(private val tmdbApi: TmdbApiService, private val movie
                     title = mediaItem.title,
                     author = mediaItem.author,
                     cover = mediaItem.cover,
-                    publishYear = mediaItem.publishYear,
+                    released = mediaItem.released,
                     desc = mediaItem.desc,
                     genres = ""
                 )
@@ -44,12 +43,10 @@ class MovieRepositoryImpl(private val tmdbApi: TmdbApiService, private val movie
     }
 
     override suspend fun getShowDetails(id: String): MediaItem {
-        Log.d("Detail", "Spustilo sa načítanie detailu pre ID: $id")
+        val movie = movieDao.getById(id)
 
-        val local = movieDao.getById(id) // získa MovieDto s JOIN rating
-
-        val oneDayMillis = 24 * 60 * 60 * 1000L
-        val shouldFetchFromApi = networkStatusProvider.isOnline() && (System.currentTimeMillis() - local.updatedAt > oneDayMillis)
+        val dayMillis = 24 * 60 * 60 * 1000L
+        val shouldFetchFromApi = networkStatusProvider.isOnline() && (System.currentTimeMillis() - movie.updatedAt > dayMillis)
 
         if (shouldFetchFromApi) {
             val typePrefix = id.substringBefore("-")
@@ -59,27 +56,27 @@ class MovieRepositoryImpl(private val tmdbApi: TmdbApiService, private val movie
                 throw IllegalArgumentException("Invalid media ID format: $id")
             }
 
-            val dto: tmdbDetailResponse = when (typePrefix) {
+            val result: tmdbDetailResponse = when (typePrefix) {
                 "TV" -> tmdbApi.getTvShowDetails(tmdbId)
                 "MOV" -> tmdbApi.getMovieDetails(tmdbId)
                 else -> throw IllegalStateException("Unknown type prefix: $typePrefix")
             }
 
-            val genres = dto.genres.joinToString(", ") { it.name }
-            val author = dto.production_companies.joinToString(", ") { it.name }
-            val publishYear = dto.release_date?.take(4)?.toIntOrNull() ?: 0
-            val description = if (!dto.tagline.isNullOrBlank()) {
-                "${dto.tagline}\n\n${dto.overview ?: ""}"
+            val genres = result.genres.joinToString(", ") { it.name }
+            val author = result.production_companies.joinToString(", ") { it.name }
+            val publishYear = result.release_date?.take(4)?.toIntOrNull() ?: 0
+            val description = if (!result.tagline.isNullOrBlank()) {
+                "${result.tagline}\n\n${result.overview ?: ""}"
             } else {
-                dto.overview ?: ""
+                result.overview ?: ""
             }
 
             val entity = MovieEntity(
                 id = id,
-                title = dto.title ?: "Unknown",
+                title = result.title,
                 author = author,
-                cover = dto.poster_path?.let { "https://image.tmdb.org/t/p/w500$it" } ?: "",
-                publishYear = publishYear,
+                cover = result.poster_path?.let { "https://image.tmdb.org/t/p/w500$it" } ?: "",
+                released = publishYear,
                 desc = description,
                 genres = genres,
                 updatedAt = System.currentTimeMillis()

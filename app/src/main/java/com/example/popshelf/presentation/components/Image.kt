@@ -16,13 +16,13 @@ import coil.request.ImageRequest
  * @author David Bolko
  * @param modifier modifier for ability to change the look of the composable screen from outside
  * @param drawable actual drawable image from resource manager which can be defined by R.drawable.*  (light theme)
- * @param drawable_dark actual drawable image from resource manager which can be defined by R.drawable.* for dark theme.
+ * @param drawableDark actual drawable image from resource manager which can be defined by R.drawable.* for dark theme.
  * @param size ability to change size of the image (Warning: if images are not same sized this parameter will not be consistent)
  */
 @Composable
-fun Image(modifier: Modifier = Modifier, drawable: Int, drawable_dark: Int? = null, size: Int = 80){
+fun Image(modifier: Modifier = Modifier, drawable: Int, drawableDark: Int? = null, size: Int = 80){
     val imageLoader = ImageLoader.Builder(LocalContext.current).components { add(GifDecoder.Factory()) }.build()
-    val image = if (isSystemInDarkTheme() && drawable_dark != null) drawable_dark else drawable
+    val image = if (isSystemInDarkTheme() && drawableDark != null) drawableDark else drawable
 
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current).data(image).build(),

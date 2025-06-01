@@ -11,10 +11,6 @@ sealed class UIEvent{
      */
     object NavigateBack : UIEvent()
 
-    /**
-     * Idle state.
-     */
-    object Idle : UIEvent()
 
     /**
      * Error state with message which can be displayed.

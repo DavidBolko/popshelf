@@ -1,6 +1,5 @@
 package com.example.popshelf.data.repository
 
-import android.util.Log
 import com.example.popshelf.data.local.dao.BookDao
 import com.example.popshelf.data.local.dao.GameDao
 import com.example.popshelf.data.local.dao.MovieDao
@@ -10,12 +9,10 @@ import com.example.popshelf.data.local.entity.ShelfItemEntity
 import com.example.popshelf.data.toMediaItem
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.repository.ShelfItemRepositary
-import kotlin.math.log
 
 class ShelfItemRepositoryImpl(private val shelfItemDao: ShelfItemDao, private val movieDao: MovieDao, private val shelfDao: ShelfDao, private val bookDao: BookDao, private val gameDao: GameDao): ShelfItemRepositary{
     override suspend fun addShelfItem(id: String, mediaType: String, status: String, rating: Int, comment: String, shelf: String) {
         val defaultShelf = shelfDao.getShelfByName(mediaType)
-        Log.d("Error", comment)
         shelfItemDao.updateRating(itemId = id, rating = rating)
         if (shelf != "None") {
             val shelfEntity = shelfDao.getShelfByName(shelf)

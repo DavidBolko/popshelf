@@ -1,6 +1,5 @@
 package com.example.popshelf.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,7 +7,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.popshelf.NetworkMonitor
+import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.PopshelfApplication
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.Shelf
@@ -41,10 +40,10 @@ class AddEditItemViewModel(
     private val networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
-    val id: String = savedStateHandle["id"] ?: ""
-    val mediaType: String = savedStateHandle["mediaType"] ?: "Books"
-    val shelfId: Int = savedStateHandle["shelfId"] ?: -1
-    val isEdit: Boolean = savedStateHandle["isEdit"] ?: false
+    private val id: String = savedStateHandle["id"] ?: ""
+    private val mediaType: String = savedStateHandle["mediaType"] ?: "Books"
+    private val shelfId: Int = savedStateHandle["shelfId"] ?: -1
+    private val isEdit: Boolean = savedStateHandle["isEdit"] ?: false
 
     private val _state = MutableSharedFlow<UIEvent>()
     val state: SharedFlow<UIEvent> = _state
@@ -72,11 +71,10 @@ class AddEditItemViewModel(
         viewModelScope.launch {
             try {
                 val item = getMediaDetailUseCase.execute(MediaType.valueOf(mediaType), id)
-                _mediaItemState.value = UIState.Success(item)
 
                 shelves = shelfRepositary.getAllShelves(false)
 
-                // Ak režim edit, načítaj existujúci záznam pre predvyplnenie
+                // Ak režim edit, načítaj existujúci záznam (vyplnený už existujúcimi udajmi)
                 if (isEdit && shelfId != -1) {
                     val shelfItem = getMediaDetailUseCase.execute(MediaType.valueOf(mediaType), id)
                     _comment.value = shelfItem.comment ?: ""
@@ -84,8 +82,8 @@ class AddEditItemViewModel(
                     _selectedStatus.value = MediaStatus.valueOf(shelfItem.status.uppercase())
                     _selectedShelf.value = shelves.find { it.id == shelfId }?.name ?: "None"
                 }
+            _mediaItemState.value = UIState.Success(item)
             } catch (e: Exception) {
-                Log.d("Error", e.message.toString())
                 _mediaItemState.value = UIState.Error("Chyba pri načítaní.")
             }
         }
@@ -136,7 +134,6 @@ class AddEditItemViewModel(
                 val item = (mediaItemState.value as? UIState.Success)?.data
                 if (item != null) {
                     if (isEdit) {
-                        Log.d("sh", (shelves.find { it.name.equals(shelf) }?.id ?: shelfId).toString())
                         shelfItemRepositary.updateShelfItem(itemId = item.id, shelfId = shelves.find { it.name == shelf }?.id ?: shelfId, status = status.title, rating = rating, comment = comment)
                     } else {
                         shelfItemRepositary.addShelfItem(id = item.id, mediaType = MediaType.valueOf(mediaType).title, status = status.title, rating = rating, comment = comment.ifEmpty { "" }, shelf = shelf)
@@ -144,7 +141,6 @@ class AddEditItemViewModel(
                 }
                 _state.emit(UIEvent.NavigateBack)
             } catch (e: Exception) {
-                Log.e("AddShelfItem", "Chyba pri ukladaní: ${e.message}", e)
                 _state.emit(UIEvent.Error("Media couldn't be saved."))
             }
         }

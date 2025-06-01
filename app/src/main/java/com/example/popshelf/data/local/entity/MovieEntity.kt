@@ -9,7 +9,7 @@ data class MovieEntity (
     val title: String,
     val author: String,
     val cover:String,
-    val publishYear: Int,
+    val released: Int,
     val desc: String?,
     val genres: String,
     val updatedAt: Long = 0L

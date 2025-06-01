@@ -79,8 +79,6 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                 is UIEvent.Error -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
-
-                UIEvent.Idle -> TODO()
             }
         }
     }
@@ -101,7 +99,7 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                     Column(modifier = Modifier.padding(horizontal = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(item.title, fontSize = 24.sp, fontWeight = FontWeight.Medium)
                         Text(item.author, fontSize = 16.sp)
-                        Text(item.publishYear.toString())
+                        Text(item.released.toString())
                     }
                 }
                 Column() {
@@ -150,7 +148,6 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                 }
                 if(selectedStatus == MediaStatus.FINISHED){
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(R.string.your_rating))
                         Rating(rating, onChangeRating = {addEditItemViewModel.onRatingSelected(it)})
                         Text(stringResource(R.string.comment))
                         TextField(value = comment, onValueChange = {addEditItemViewModel.onCommentChanged(it)}, modifier = Modifier.fillMaxWidth().fillMaxHeight())

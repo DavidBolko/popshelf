@@ -1,23 +1,21 @@
-package com.example.popshelf
+package com.example.popshelf.data
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
-import androidx.core.content.ContextCompat.getSystemService
+import com.example.popshelf.domain.NetworkStatusProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class NetworkMonitor(context: Context) {
-
-    val networkRequest = NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).addTransportType(NetworkCapabilities.TRANSPORT_WIFI).addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build()
+class NetworkMonitor(context: Context): NetworkStatusProvider {
 
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
+
+    override fun isOnline(): Boolean = _isConnected.value
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
@@ -31,7 +29,7 @@ class NetworkMonitor(context: Context) {
 
     init {
         try {
-            connectivityManager.requestNetwork(networkRequest, callback)
+            connectivityManager.registerDefaultNetworkCallback(callback)
         } catch (e: Exception) {
             _isConnected.value = false
         }

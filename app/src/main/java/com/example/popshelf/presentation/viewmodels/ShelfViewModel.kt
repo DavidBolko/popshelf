@@ -1,6 +1,5 @@
 package com.example.popshelf.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -33,7 +32,6 @@ class ShelfViewModel(private val shelfItemRepositary: ShelfItemRepositary, saved
     init {
         viewModelScope.launch {
             try {
-                Log.d("Error", id)
                 _state.value = UIState.Success(shelfItemRepositary.getShelfItems(id.toInt()))
             } catch (e: Exception) {
                 _state.value = UIState.Error("Chyba pri načítaní položiek poličky.")

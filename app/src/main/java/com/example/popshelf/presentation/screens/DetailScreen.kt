@@ -65,6 +65,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
     val imageLoader = ImageLoader.Builder(context).components { add(GifDecoder.Factory()) }.build()
     val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
 
+
     LaunchedEffect(Unit) {
         detailViewModel.state.collect { event ->
             when (event) {
@@ -74,8 +75,15 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
                 is UIEvent.Error -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
 
-                UIEvent.Idle -> TODO()
+
+    LaunchedEffect(Unit) {
+        detailViewModel.isConnected.collect { online ->
+            if (online) {
+                detailViewModel.refresh()
             }
         }
     }
@@ -85,7 +93,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
         topBar = { TopAppBar(title = { Text("Detail") },
             navigationIcon = {
                 /*
-                Používa sa lambda funkcia dropUnlessResumed, ktorá zabezpeči že sa vložena funkcia
+                Používa sa lambda funkcia dropUnlessResumed, ktorá zabezpeči že sa vložena funkcia vykoná
                 iba ak je lifecycle stav aspon RESUMED.
                  */
                 IconButton(onClick = dropUnlessResumed { nav.popBackStack() }) {
@@ -131,7 +139,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
                         Column(modifier = Modifier.padding(horizontal = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(item.title, fontSize = 24.sp, fontWeight = FontWeight.Medium)
                             Text(item.author, fontSize = 16.sp)
-                            Text(item.publishYear.toString())
+                            Text(item.released.toString())
                             Rating(item.rating)
                         }
                     }

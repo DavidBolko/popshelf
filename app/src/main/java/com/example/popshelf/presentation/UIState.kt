@@ -41,7 +41,7 @@ fun <T> ValidateState(uiState: UIState<T>, modifier: Modifier = Modifier, isInte
     when (uiState) {
         is UIState.Loading -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Image(drawable = R.drawable.search, drawable_dark = R.drawable.search_dark)
+                Image(drawable = R.drawable.search, drawableDark = R.drawable.search_dark)
             }
         }
 
@@ -52,10 +52,10 @@ fun <T> ValidateState(uiState: UIState<T>, modifier: Modifier = Modifier, isInte
         is UIState.Error -> {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 if(isInternet){
-                    Image(drawable = R.drawable.error, drawable_dark = R.drawable.error_dark)
+                    Image(drawable = R.drawable.error, drawableDark = R.drawable.error_dark)
                     Text(text = "Vyskytla sa chyba", color = Color.Red, fontSize = 18.sp)
                 } else {
-                    Image(drawable = R.drawable.connection, drawable_dark = R.drawable.connection_dark)
+                    Image(drawable = R.drawable.connection, drawableDark = R.drawable.connection_dark)
                     Text(text = "No connection to the internet", color = Color.Red, fontSize = 18.sp)
                 }
             }

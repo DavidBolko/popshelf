@@ -1,6 +1,5 @@
 package com.example.popshelf.data.repository
 
-import android.util.Log
 import com.example.popshelf.data.remote.BookApi
 import com.example.popshelf.data.local.dao.BookDao
 import com.example.popshelf.data.local.entity.BookEntity
@@ -17,30 +16,44 @@ class BookRepositoryImpl(private val bookApi: BookApi, private val bookDao: Book
             bookDao.findByName(trimmedTitle).map { it.toMediaItem() }
         } else {
             val apiResults = bookApi.searchBooks(trimmedTitle, page = page, limit = 20)
-            val mediaItems = apiResults.map { it.toMediaItem() }
-            bookDao.insertAll(mediaItems.map {
-                BookEntity(it.id, it.title, it.author, it.cover, it.publishYear, it.desc)
-            })
 
+            val mediaItems = apiResults.docs.map { it.toMediaItem() }
+            bookDao.insertAll(mediaItems.map {
+                BookEntity(it.id, it.title, it.author, it.cover, it.released, it.desc)
+            })
             return mediaItems
         }
+
     }
 
 
-
     override suspend fun getBookDetail(id: String): MediaItem {
-        val info = bookApi.getWorkDetail(id)
+        val book = bookDao.findById(id)
+        val dayMillis = 24 * 60 * 60 * 1000L
+        val shouldFetch = networkStatusProvider.isOnline() && (System.currentTimeMillis() - book.updatedAt > dayMillis)
 
-        val desc = when (val raw = info.description) {
-            null -> "Description not available"
-            else -> {
-                val text = raw.toString()
-                if (text.contains("value=")) text.substringAfter("value=") else text
+        if (shouldFetch) {
+            val info = bookApi.getWorkDetail(id)
+
+            val desc = when (val raw = info.description) {
+                null -> "Description not available"
+                else -> {
+                    val text = raw.toString()
+                    if (text.contains("value=")) text.substringAfter("value=") else text
+                }
             }
+
+            bookDao.insert(BookEntity(
+                id = id,
+                title = book.title,
+                author = book.author,
+                cover = book.cover,
+                released = book.released,
+                desc = desc,
+                updatedAt = System.currentTimeMillis()
+            ))
         }
-        bookDao.updateDesc(id, desc)
-        val bookWithRating = bookDao.findById(id)
-        Log.d("dad", bookWithRating.toString())
-        return bookWithRating.toMediaItem()
+
+        return bookDao.findById(id).toMediaItem()
     }
 }

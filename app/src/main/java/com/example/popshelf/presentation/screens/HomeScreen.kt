@@ -58,7 +58,6 @@ import com.example.popshelf.presentation.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, nav: NavController, addShelfViewModel: AddShelfViewModel, homeViewModel: HomeViewModel) {
-    val context = LocalContext.current
     val state by homeViewModel.state.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
@@ -79,9 +78,6 @@ fun HomeScreen(modifier: Modifier = Modifier, nav: NavController, addShelfViewMo
             lifecycle.removeObserver(observer)
         }
     }
-
-    val imageLoader = remember { ImageLoader.Builder(context).components { add(GifDecoder.Factory()) }.build() }
-    val placeholderRequest = ImageRequest.Builder(context).data(R.drawable.no_books).build()
 
     Scaffold(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),

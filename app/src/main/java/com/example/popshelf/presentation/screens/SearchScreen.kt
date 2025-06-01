@@ -19,6 +19,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +55,14 @@ fun SearchScreen(modifier: Modifier = Modifier, searchViewModel: SearchViewModel
     val tabs = MediaType.entries
     var selectedTab by remember { mutableStateOf(searchType) }
 
+    LaunchedEffect(key1 = true) {
+        searchViewModel.isConnected.collect { online ->
+            if (online) {
+                searchViewModel.refresh()
+            }
+        }
+    }
+
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Surface(color = MaterialTheme.colorScheme.surface,) {
             Column(modifier = modifier){
@@ -87,14 +96,14 @@ fun SearchScreen(modifier: Modifier = Modifier, searchViewModel: SearchViewModel
             if(items.isEmpty()) {
                 Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
                     if(searchQuery.isEmpty()){
-                        Image(drawable = R.drawable.write, drawable_dark = R.drawable.write_dark)
+                        Image(drawable = R.drawable.write, drawableDark = R.drawable.write_dark)
                         Text("Search by typing")
                     } else {
                         if(!isConnected){
-                            Image(drawable = R.drawable.connection, drawable_dark = R.drawable.connection_dark)
+                            Image(drawable = R.drawable.connection, drawableDark = R.drawable.connection_dark)
                             Text("Connect to the Internet.")
                         } else {
-                            Image(drawable = R.drawable.empty_shelf, drawable_dark = R.drawable.empty_shelf_dark)
+                            Image(drawable = R.drawable.empty_shelf, drawableDark = R.drawable.empty_shelf_dark)
                         }
                         Text("Sadly nothing was found")
 

@@ -1,6 +1,5 @@
 package com.example.popshelf.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,7 +7,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.popshelf.NetworkMonitor
+import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.PopshelfApplication
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.repository.ShelfItemRepositary
@@ -42,18 +41,31 @@ class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, 
     private val id: String = savedStateHandle["id"] ?: ""
     val mediaType: String = savedStateHandle["mediaType"] ?: "Books"
     val fromShelf: Boolean = savedStateHandle["fromShelf"] ?: false
+
     init {
+        loadData()
+    }
+
+
+    /**
+     * Method runs the loadData method again if needed.
+     */
+    fun refresh(){
+        loadData()
+    }
+
+
+    private fun loadData(){
         viewModelScope.launch {
             try {
-                Log.d("Error", mediaType)
                 val item = getMediaDetailUseCase.execute(MediaType.valueOf(mediaType), id)
                 detail.value = UIState.Success(item)
             } catch (e: Exception) {
-                Log.d("Error", e.message.toString())
                 detail.value = UIState.Error("Chyba pri načítaní.")
             }
         }
     }
+
 
     /**
      * Function which run after clicking the delete button inside the detail screen.

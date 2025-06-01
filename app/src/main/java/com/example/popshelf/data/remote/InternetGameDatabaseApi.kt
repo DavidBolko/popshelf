@@ -132,6 +132,7 @@ data class Game(
     val id: Long,
     val name: String,
     val summary: String?,
+    val first_release_date: Long,
     val involved_companies: List<Int>?,
     val cover: Int?
 )
