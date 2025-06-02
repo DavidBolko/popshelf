@@ -9,4 +9,9 @@
     <string name="your_rating">Your rating:</string>
     <string name="rating">Rating:</string>
     <string name="work_cover">Cover of work:</string>
+    <string name="channel_name">Popshelf</string>
+    <string name="channel_desc">Popshelf main notification channel</string>
+    <string name="notification_tip">Tonight\'s pick: %1$s. Looks like a great choice.</string>
+    <string name="notification_rate_tip">Finished %1$s? Rate it now ⭐</string>
+
 </resources>

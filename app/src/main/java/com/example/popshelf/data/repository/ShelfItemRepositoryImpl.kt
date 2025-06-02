@@ -49,13 +49,13 @@ class ShelfItemRepositoryImpl(private val shelfItemDao: ShelfItemDao, private va
         return items.map { it.toMediaItem() }
     }
 
-    override suspend fun getShelfItems(id: Int): List<MediaItem> {
-        val items = if (id in 1..3) {
-            shelfItemDao.getItemsFromDefaultShelf(id)
-        } else {
-            shelfItemDao.getShelfItems(id)
+    override suspend fun getShelfItems(id: Int?): List<MediaItem> {
+        val items = when {
+            id == null -> shelfItemDao.getShelfItems()
+            id in 1..3 -> shelfItemDao.getItemsFromDefaultShelf(id)
+            else -> shelfItemDao.getShelfItems(id)
         }
-
+        val statusMap = items.associateBy { it.itemId }
         val books = items.filter { it.mediaType == "Books" }
         val games = items.filter { it.mediaType == "Games" }
         val movies = items.filter { it.mediaType == "Movies" }
@@ -65,9 +65,9 @@ class ShelfItemRepositoryImpl(private val shelfItemDao: ShelfItemDao, private va
         val movieEntities = movieDao.getById(movies.map { it.itemId })
 
         return buildList {
-            addAll(bookEntities.map { it.toMediaItem() })
-            addAll(gameEntities.map { it.toMediaItem() })
-            addAll(movieEntities.map { it.toMediaItem() })
+            addAll(bookEntities.map { it.toMediaItem(statusMap[it.id]?.status.orEmpty()) })
+            addAll(gameEntities.map { it.toMediaItem(statusMap[it.id]?.status.orEmpty()) })
+            addAll(movieEntities.map { it.toMediaItem(statusMap[it.id]?.status.orEmpty()) })
         }
     }
 

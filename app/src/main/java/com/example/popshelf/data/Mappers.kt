@@ -22,32 +22,35 @@ import java.time.ZoneId
 /**
  * Maps a [BookEntity] to a [MediaItem].
  */
-fun BookEntity.toMediaItem(): MediaItem = MediaItem(
+fun BookEntity.toMediaItem(status: String = ""): MediaItem = MediaItem(
     title = title,
     author = author,
     cover = cover,
     id = id,
     released = released,
     desc = desc ?: "Description not available",
-    mediaType = MediaType.BOOKS
+    mediaType = MediaType.BOOKS,
+    status = status
 )
 /**
  * Maps a [MovieEntity] to a [MediaItem].
  */
-fun MovieEntity.toMediaItem(): MediaItem = MediaItem(
+fun MovieEntity.toMediaItem(status: String = ""): MediaItem = MediaItem(
     title = title,
     author = author,
     cover = cover,
     id = id,
     released = released,
     desc = desc ?: "Description not available",
-    mediaType = MediaType.MOVIES
+    mediaType = MediaType.MOVIES,
+    status = status
+
 )
 
 /**
  * Maps a [GameEntity] to a [MediaItem] of type [MediaType.GAMES].
  */
-fun GameEntity.toMediaItem(): MediaItem = MediaItem(
+fun GameEntity.toMediaItem(status: String = ""): MediaItem = MediaItem(
     title = title,
     author = author,
     cover = cover,
@@ -55,6 +58,7 @@ fun GameEntity.toMediaItem(): MediaItem = MediaItem(
     released = 1940,
     desc = desc,
     mediaType = MediaType.GAMES,
+    status = status
 )
 //------------------------------------------------------------------------------//
 //Mapuje sa z API typov do MediaItem
@@ -75,10 +79,10 @@ fun Book.toMediaItem(): MediaItem = MediaItem(
 /**
  * Maps an external [Game] model to a [MediaItem].
  */
-fun Game.toMediaItem(): MediaItem = MediaItem(
+fun Game.toMediaItem(imageId: String? = null): MediaItem = MediaItem(
     title = name,
     author = (involved_companies?.map { it.toString() } ?: emptyList()).joinToString(", "),
-    cover = cover?.toString() ?: "no-cover",
+    cover = imageId ?: "no-cover",
     id = id.toString(),
     released = Instant.ofEpochSecond(first_release_date).atZone(ZoneId.systemDefault()).year,
     desc = summary ?: "No description available",

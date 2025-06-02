@@ -1,17 +1,29 @@
 package com.example.popshelf
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.popshelf.presentation.NotificationSystem
+import com.example.popshelf.presentation.NotificationWorker
 import com.example.popshelf.presentation.components.NavigationBar
 import com.example.popshelf.presentation.screens.AddScreen
 import com.example.popshelf.presentation.screens.DetailScreen
@@ -25,6 +37,10 @@ import com.example.popshelf.presentation.viewmodels.HomeViewModel
 import com.example.popshelf.presentation.viewmodels.SearchViewModel
 import com.example.popshelf.presentation.viewmodels.ShelfViewModel
 import com.example.popshelf.ui.theme.PopshelfTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 /**
  * The main activity of the Popshelf application.
@@ -36,6 +52,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            val notif = NotificationSystem(applicationContext)
 
             PopshelfTheme {
                 //Scaffold - Zakladny layout, nejaky topbar, obsah, bottom bar...
@@ -77,6 +94,11 @@ class MainActivity : ComponentActivity() {
                                 navArgument("mediaType") { type = NavType.StringType },
                                 navArgument("shelfId") { type = NavType.IntType },
                                 navArgument("isEdit") { type = NavType.BoolType },
+                            ),
+                            deepLinks = listOf(
+                                navDeepLink {
+                                    uriPattern = "popshelf://add/{id}/{mediaType}/{shelfId}/{isEdit}"
+                                }
                             )
                         ) { backStackEntry ->
                             val viewModel: AddEditItemViewModel = viewModel(
@@ -92,8 +114,14 @@ class MainActivity : ComponentActivity() {
                                 navArgument("id") { type = NavType.StringType },
                                 navArgument("mediaType") { type = NavType.StringType },
                                 navArgument("fromShelf") { type = NavType.BoolType }
+                            ),
+                            deepLinks = listOf(
+                                navDeepLink {
+                                    uriPattern = "popshelf://detail/{id}/{mediaType}/{fromShelf}"
+                                }
                             )
-                        ) { backStackEntry ->
+                        )
+                        { backStackEntry ->
                             val viewModel: DetailViewModel = viewModel(
                                 factory = DetailViewModel.Factory,
                                 viewModelStoreOwner = backStackEntry
@@ -103,7 +131,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+
+                Button(onClick = {
+                    notif.runTestNotif()
+                }) {
+                    Text("Test Notification")
+                }
             }
+
         }
     }
 }

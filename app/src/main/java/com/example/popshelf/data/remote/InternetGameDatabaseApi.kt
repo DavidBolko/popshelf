@@ -70,6 +70,14 @@ interface GameApi {
         @Header("Authorization") authHeader: String,
         @Body body: RequestBody
     ): List<companyResponse>
+
+
+    @POST("covers")
+    suspend fun getCovers(
+        @Header("Client-ID") clientId: String,
+        @Header("Authorization") authHeader: String,
+        @Body body: RequestBody
+    ): List<IgdbCoverResponse>
 }
 
 /**
@@ -134,6 +142,10 @@ data class Game(
     val summary: String?,
     val first_release_date: Long,
     val involved_companies: List<Int>?,
-    val cover: Int?
+    val cover: Long?
 )
 
+data class IgdbCoverResponse(
+    val id: Long,
+    @SerializedName("image_id") val imageId: String
+)

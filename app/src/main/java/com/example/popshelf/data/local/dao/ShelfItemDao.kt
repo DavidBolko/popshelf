@@ -21,6 +21,9 @@ interface ShelfItemDao {
     @Query("SELECT * FROM ShelfItemEntity WHERE shelfId = :shelfId")
     suspend fun getShelfItems(shelfId: Int): List<ShelfItemEntity>
 
+    @Query("SELECT * FROM ShelfItemEntity")
+    suspend fun getShelfItems(): List<ShelfItemEntity>
+
     @Query("SELECT * FROM ShelfItemEntity WHERE defaultShelf = :shelfId")
     suspend fun getItemsFromDefaultShelf(shelfId: Int): List<ShelfItemEntity>
 

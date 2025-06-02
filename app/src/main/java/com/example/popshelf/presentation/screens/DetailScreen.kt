@@ -42,6 +42,7 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.example.popshelf.R
+import com.example.popshelf.presentation.MediaType
 import com.example.popshelf.presentation.UIEvent
 import com.example.popshelf.presentation.UIState
 import com.example.popshelf.presentation.components.Rating
@@ -63,7 +64,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
     val state = detailViewModel.data.collectAsState().value
 
     val imageLoader = ImageLoader.Builder(context).components { add(GifDecoder.Factory()) }.build()
-    val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
+    //val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
 
 
     LaunchedEffect(Unit) {
@@ -132,6 +133,11 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
     )
     {padding ->
         ValidateState(state, isInternet = detailViewModel.isConnected.collectAsState().value) { item->
+            val image = when(item.mediaType){
+                MediaType.MOVIES -> item.cover
+                MediaType.GAMES -> "https://images.igdb.com/igdb/image/upload/t_cover_big/${item.cover}.jpg"
+                MediaType.BOOKS -> "https://covers.openlibrary.org/b/id/${item.cover}-S.jpg"
+            } //real obrazok z API
             Column(Modifier.padding(padding).padding(vertical = 16.dp, horizontal = 24.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Card(){
                     Row(modifier = modifier.padding(12.dp)) {

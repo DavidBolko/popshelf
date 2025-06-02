@@ -41,8 +41,12 @@ fun MediaItem(item: MediaItem, openDetail: ()->Unit, mediaType: MediaType) {
             contentColor = MaterialTheme.colorScheme.onSurface
     )){
         Row(modifier = Modifier.padding(8.dp)){
-            //val image = "https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg", //real obrazok z API
-            val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
+            val image = when(item.mediaType){
+                MediaType.MOVIES -> item.cover
+                MediaType.GAMES -> "https://images.igdb.com/igdb/image/upload/t_cover_big/${item.cover}.jpg"
+                MediaType.BOOKS -> "https://covers.openlibrary.org/b/id/${item.cover}-S.jpg"
+            } //real obrazok z API
+            //val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
             AsyncImage(model = image, contentDescription = null, modifier = Modifier.size(80.dp))
 
             Spacer(modifier = Modifier.width(8.dp))

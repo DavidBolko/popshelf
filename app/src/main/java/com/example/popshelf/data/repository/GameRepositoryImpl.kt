@@ -1,5 +1,6 @@
 package com.example.popshelf.data.repository
 
+import android.util.Log
 import com.Secrets
 import com.example.popshelf.data.remote.GameApi
 import com.example.popshelf.data.remote.authService
@@ -15,27 +16,55 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: GameDao, private val networkStatusProvider: NetworkStatusProvider): GameRepository {
     override suspend fun getGamesByQuery(query: String, page: Int): List<MediaItem> {
-        return if (!networkStatusProvider.isOnline() || query.isEmpty()) {
-            gameDao.findByName(query).map { it.toMediaItem() }
-        } else {
-            val token = authService.getAccessToken(Secrets.idgb_id, Secrets.idgb_scrt).accessToken
-            val apiGames = gameApi.getGames(
+        if (!networkStatusProvider.isOnline() || query.isEmpty()) {
+            return gameDao.findByName(query).map { it.toMediaItem() }
+        }
+
+        val token = authService.getAccessToken(Secrets.idgb_id, Secrets.idgb_scrt).accessToken
+
+        val apiGames = gameApi.getGames(
+            clientId = Secrets.idgb_id,
+            authHeader = "Bearer $token",
+            body = """
+            search "$query";
+            fields id, name, involved_companies, summary, cover, first_release_date;
+            limit 20;
+            offset ${(page - 1) * 20};
+        """.trimIndent().toRequestBody("text/plain".toMediaTypeOrNull())
+        )
+
+        // Získaj cover ID z výsledkov
+        val coverIds = apiGames.mapNotNull { it.cover }.distinct()
+
+        // Zavolaj cover API len ak sú nejaké ID
+        val covers = if (coverIds.isNotEmpty()) {
+            gameApi.getCovers(
                 clientId = Secrets.idgb_id,
                 authHeader = "Bearer $token",
                 body = """
-                search "$query";
-                fields id, name, involved_companies, summary, cover, first_release_date;
+                fields image_id;
                 limit 20;
-                offset ${(page - 1) * 20};
+                where id = (${coverIds.joinToString(",")});
             """.trimIndent().toRequestBody("text/plain".toMediaTypeOrNull())
             )
+        } else emptyList()
 
-            val mediaItems = apiGames.map { it.toMediaItem() }
-            gameDao.insertAll(mediaItems.map { it.toGameEntity() })
+        Log.d("CHECK_GAME", covers.toString())
+        // Map cover ID → image_id
+        val coverMap = covers.associateBy { it.id }
+        Log.d("covers", coverMap.toString())
 
-            return mediaItems
+        // Teraz premapuj hry s image_id
+        val mediaItems = apiGames.map { game ->
+            val imageId = game.cover?.let { coverMap[it]?.imageId }
+            game.toMediaItem(imageId)
         }
+
+        gameDao.insertAll(mediaItems.map { it.toGameEntity() })
+
+        return mediaItems
     }
+
 
     override suspend fun getGameDetails(id: String): MediaItem {
         var game = gameDao.findById(id)
