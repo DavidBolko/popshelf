@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
+import com.example.popshelf.R
 
 /**
  * Wrapper composable function based around Async image from Coil library.
- * @author David Bolko
  * @param modifier modifier for ability to change the look of the composable screen from outside
  * @param drawable actual drawable image from resource manager which can be defined by R.drawable.*  (light theme)
  * @param drawableDark actual drawable image from resource manager which can be defined by R.drawable.* for dark theme.
@@ -26,7 +27,7 @@ fun Image(modifier: Modifier = Modifier, drawable: Int, drawableDark: Int? = nul
 
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current).data(image).build(),
-        contentDescription = "Načítava sa...",
+        contentDescription = stringResource(R.string.loading),
         imageLoader = imageLoader,
         modifier = modifier.size(size.dp)
     )

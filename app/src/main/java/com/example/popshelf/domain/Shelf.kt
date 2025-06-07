@@ -2,7 +2,6 @@ package com.example.popshelf.domain
 
 /**
  * Represents a shelf within the application, typically used to organize media items.
- * @author David Bolko
  * @property id identifier for the shelf.
  * @property image image path representing the shelf's visual. (Nullable)
  * @property name display name of the shelf.

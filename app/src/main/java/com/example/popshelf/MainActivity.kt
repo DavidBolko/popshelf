@@ -1,17 +1,18 @@
 package com.example.popshelf
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,11 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.popshelf.presentation.NotificationSystem
-import com.example.popshelf.presentation.NotificationWorker
 import com.example.popshelf.presentation.components.NavigationBar
 import com.example.popshelf.presentation.screens.AddScreen
 import com.example.popshelf.presentation.screens.DetailScreen
@@ -37,10 +34,8 @@ import com.example.popshelf.presentation.viewmodels.HomeViewModel
 import com.example.popshelf.presentation.viewmodels.SearchViewModel
 import com.example.popshelf.presentation.viewmodels.ShelfViewModel
 import com.example.popshelf.ui.theme.PopshelfTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
+import android.Manifest
+
 
 /**
  * The main activity of the Popshelf application.
@@ -48,8 +43,27 @@ import java.util.concurrent.TimeUnit
  * This activity sets the theme and contains the [NavHost] of the application.
  */
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            Log.d("Notifications", "Povolené")
+        } else {
+            Log.d("Notifications", "Nepovolené")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
         setContent {
             val navController = rememberNavController()
             val notif = NotificationSystem(applicationContext)
@@ -132,12 +146,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-
+                /*
                 Button(onClick = {
                     notif.runTestNotif()
                 }) {
                     Text("Test Notification")
                 }
+
+                 */
+
+
             }
 
         }

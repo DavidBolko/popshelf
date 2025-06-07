@@ -8,6 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * Implementation of [NetworkStatusProvider] using Android's [ConnectivityManager].
+ *
+ * This class check if network connectivity changes and exposes the change via a [StateFlow].
+ * and it provides a synchronous method [isOnline] to check current status.
+ *
+ * @param context Application context.
+ */
 class NetworkMonitor(context: Context): NetworkStatusProvider {
 
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

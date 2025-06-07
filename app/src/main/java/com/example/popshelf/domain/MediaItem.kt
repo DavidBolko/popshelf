@@ -5,7 +5,6 @@ import com.example.popshelf.presentation.MediaType
 /**
  * Represents a media item stored on a shelf, such as a book, movie or game work.
  *
- * @author David Bolko
  * @property title the title of the media item.
  * @property author the author or creator of the media item.
  * @property cover identifier of an image.

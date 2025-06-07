@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.example.popshelf.R
 import com.example.popshelf.presentation.components.Image
@@ -25,12 +26,11 @@ sealed class UIState<out T> {
     /*** Class which represents success state, after fetching when something goes wrong.
      * @param message - message which can be displayed as error message.
      * */
-    data class Error(val message: String) : UIState<Nothing>()
+    data class Error(val message: Int) : UIState<Nothing>()
 }
 
 /*** Composable function which decides if data are available, if yes it takes them a put them inside the passed
  * composable to show it on the screen.
- * @author David Bolko
  * @param uiState - uiState passed from viewmodel which preserves actual uistate, when success data are rendered on screen.
  * @param modifier - modifier for ability to change the look of the composable screen from outside
  * @param isInternet - boolean for deciding if internet is available or not
@@ -53,10 +53,10 @@ fun <T> ValidateState(uiState: UIState<T>, modifier: Modifier = Modifier, isInte
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 if(isInternet){
                     Image(drawable = R.drawable.error, drawableDark = R.drawable.error_dark)
-                    Text(text = "Vyskytla sa chyba", color = Color.Red, fontSize = 18.sp)
+                    Text(text = stringResource(uiState.message), color = Color.Red, fontSize = 18.sp)
                 } else {
                     Image(drawable = R.drawable.connection, drawableDark = R.drawable.connection_dark)
-                    Text(text = "No connection to the internet", color = Color.Red, fontSize = 18.sp)
+                    Text(text = stringResource(R.string.internet_error), color = Color.Red, fontSize = 18.sp)
                 }
             }
         }

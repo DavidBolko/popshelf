@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
@@ -40,7 +41,6 @@ import com.example.popshelf.presentation.viewmodels.SearchViewModel
 
 /***
  * Composable function representing search screen of the application, it allows a user to search works.
- * @author David Bolko
  * @param modifier - modifier for ability to change the look of the composable screen from outside
  * @param searchViewModel - searchViewmodel, viewmodel for fetching and preserving data for this screen.
  */
@@ -72,8 +72,8 @@ fun SearchScreen(modifier: Modifier = Modifier, searchViewModel: SearchViewModel
                     singleLine = true,
                     modifier = modifier.fillMaxWidth().padding(10.dp),
                     shape= RoundedCornerShape(50),
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "asdas") },
-                    placeholder = { Text("Search...") }
+                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon)) },
+                    placeholder = { Text(stringResource(R.string.search)) }
                 )
 
                 TabRow(selectedTabIndex = searchType.ordinal) {
@@ -97,24 +97,24 @@ fun SearchScreen(modifier: Modifier = Modifier, searchViewModel: SearchViewModel
                 Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
                     if(searchQuery.isEmpty()){
                         Image(drawable = R.drawable.write, drawableDark = R.drawable.write_dark)
-                        Text("Search by typing")
+                        Text(stringResource(R.string.type))
                     } else {
                         if(!isConnected){
                             Image(drawable = R.drawable.connection, drawableDark = R.drawable.connection_dark)
-                            Text("Connect to the Internet.")
+                            Text(stringResource(R.string.internet))
                         } else {
                             Image(drawable = R.drawable.empty_shelf, drawableDark = R.drawable.empty_shelf_dark)
                         }
-                        Text("Sadly nothing was found")
+                        Text(stringResource(R.string.nothing))
 
                     }
                 }
             } else {
                 LazyColumn {
                  itemsIndexed(items) { index, item ->
-                        MediaItem(item = item, openDetail = dropUnlessResumed { nav.navigate("detail/${item.id}/${selectedTab.name}/true") }, mediaType = selectedTab,)
-                        // Načitanie dalšej strany vysledkov
-                        if (index == items.lastIndex - 5) {
+                        MediaItem(item = item, openDetail = dropUnlessResumed { nav.navigate("detail/${item.id}/${selectedTab.name}/true") })
+                        // načitanie dalšej strany vysledkov
+                        if (index == items.lastIndex - 5 && isConnected) {
                             searchViewModel.loadMore()
                         }
                     }

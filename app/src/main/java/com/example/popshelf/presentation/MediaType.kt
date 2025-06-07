@@ -2,7 +2,6 @@ package com.example.popshelf.presentation
 
 
 /*** Enumeration class which represents media type.
- * @author David Bolko
  * @property title - UI representaion of individual media states.
  * @property number - Integer representaion of individual media states.
  */

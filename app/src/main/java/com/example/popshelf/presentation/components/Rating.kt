@@ -20,7 +20,6 @@ import com.example.popshelf.presentation.screens.calculateRating
 
 /**
  * Composable function which renders rating of media work with stars.
- * @author David Bolko
  * @param rating integer representation of selected rating.
  * @param onChangeRating lambda function which runs when user changes the rating.
  */

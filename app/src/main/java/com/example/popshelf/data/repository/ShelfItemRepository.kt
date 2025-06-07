@@ -8,40 +8,24 @@ import com.example.popshelf.data.local.dao.ShelfItemDao
 import com.example.popshelf.data.local.entity.ShelfItemEntity
 import com.example.popshelf.data.toMediaItem
 import com.example.popshelf.domain.MediaItem
-import com.example.popshelf.domain.repository.ShelfItemRepositary
+import com.example.popshelf.domain.repository.IShelfItemRepositary
 
-class ShelfItemRepositoryImpl(private val shelfItemDao: ShelfItemDao, private val movieDao: MovieDao, private val shelfDao: ShelfDao, private val bookDao: BookDao, private val gameDao: GameDao): ShelfItemRepositary{
+class ShelfItemRepository(private val shelfItemDao: ShelfItemDao, private val movieDao: MovieDao, private val shelfDao: ShelfDao, private val bookDao: BookDao, private val gameDao: GameDao): IShelfItemRepositary{
     override suspend fun addShelfItem(id: String, mediaType: String, status: String, rating: Int, comment: String, shelf: String) {
         val defaultShelf = shelfDao.getShelfByName(mediaType)
-        shelfItemDao.updateRating(itemId = id, rating = rating)
-        if (shelf != "None") {
-            val shelfEntity = shelfDao.getShelfByName(shelf)
+        val userShelfId = if (shelf != "None") shelfDao.getShelfByName(shelf).id else null
 
-            shelfItemDao.insertItem(
-                ShelfItemEntity(
-                    itemId = id,
-                    mediaType = mediaType,
-                    rating = rating,
-                    status = status,
-                    comment = comment,
-                    shelfId = shelfEntity.id
-                )
-            )
-        }
+        val entity = ShelfItemEntity(
+            itemId = id,
+            mediaType = mediaType,
+            status = status,
+            rating = rating,
+            comment = comment,
+            defaultShelf = defaultShelf.id,
+            shelfId = userShelfId
+        )
 
-        val exists = shelfItemDao.getFromDefaultById(id)
-        if (exists == null) {
-            shelfItemDao.insertItem(
-                ShelfItemEntity(
-                    itemId = id,
-                    mediaType = mediaType,
-                    rating = rating,
-                    status = status,
-                    comment = comment,
-                    shelfId = defaultShelf.id
-                )
-            )
-        }
+        shelfItemDao.insertItem(entity)
     }
 
     override suspend fun getAllBooks(): List<MediaItem> {
@@ -75,10 +59,17 @@ class ShelfItemRepositoryImpl(private val shelfItemDao: ShelfItemDao, private va
         this.shelfItemDao.deleteItem(itemId)
     }
 
-
-    override suspend fun updateShelfItem(itemId: String, shelfId: Int, status: String, rating: Int, comment: String) {
-        shelfItemDao.updateItem(itemId, shelfId, status, rating, comment)
+    override suspend fun updateShelfItem(itemId: String, shelfId: Int?, status: String, rating: Int, comment: String) {
+        val existing = shelfItemDao.getItemById(itemId)
+        if (existing != null) {
+            val updated = existing.copy(
+                status = status,
+                rating = rating,
+                comment = comment,
+                shelfId = shelfId
+            )
+            shelfItemDao.insertItem(updated)
+        }
     }
-
 
 }

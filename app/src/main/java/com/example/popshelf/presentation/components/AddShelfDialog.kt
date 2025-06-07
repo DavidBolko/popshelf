@@ -37,15 +37,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.popshelf.R
 import com.example.popshelf.presentation.viewmodels.AddShelfViewModel
 
 
 /**
  * Composable function which represents add shelf dialog
- * @author David Bolko
  * @param onDismiss onDismiss callback when user request to dismiss the dialog.
  * @param addShelfViewModel viewmodel for fetching and preserving data for this screen.
  */
@@ -63,16 +64,18 @@ fun AddShelfDialog(onDismiss: () -> Unit, addShelfViewModel: AddShelfViewModel )
             Column(modifier = Modifier.padding(16.dp)
             ) {
                 TopAppBar(
-                    title = { Text("Add new shelf") },
+                    title = { Text(stringResource(R.string.add_shelf)) },
                     navigationIcon = {
                         IconButton(onClick = onDismiss) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close_icon))
                         }
                     }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(value = name, onValueChange = { addShelfViewModel.onNameChange(it) }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth(), maxLines = 1)
+                OutlinedTextField(value = name, onValueChange = { addShelfViewModel.onNameChange(it) }, label = { Text(
+                    stringResource(R.string.name)
+                ) }, modifier = Modifier.fillMaxWidth(), maxLines = 1)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 var expanded by remember { mutableStateOf(false) }
@@ -107,11 +110,11 @@ fun AddShelfDialog(onDismiss: () -> Unit, addShelfViewModel: AddShelfViewModel )
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = { addShelfViewModel.createShelf(); onDismiss() },enabled = isCreationAllowed) {
-                        Text("Add")
+                        Text(stringResource(R.string.add))
                     }
                 }
             }

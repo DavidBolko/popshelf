@@ -4,11 +4,11 @@ import com.example.popshelf.data.local.dao.ShelfDao
 import com.example.popshelf.data.local.entity.ShelfEntity
 import com.example.popshelf.data.toShelf
 import com.example.popshelf.domain.Shelf
-import com.example.popshelf.domain.repository.ShelfRepositary
+import com.example.popshelf.domain.repository.IShelfRepository
 
 
-class ShelfRepositoryImpl(private val shelfDao: ShelfDao): ShelfRepositary{
-    val defaultShelves = listOf(
+class ShelfRepository(private val shelfDao: ShelfDao): IShelfRepository{
+    private val defaultShelves = listOf(
         ShelfEntity(name = "Books", image = "books", isSystem = true),
         ShelfEntity(name = "Movies",image = "movies", isSystem = true),
         ShelfEntity(name = "Games", image = "games", isSystem = true)

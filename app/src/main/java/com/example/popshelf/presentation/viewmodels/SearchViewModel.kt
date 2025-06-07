@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.PopshelfApplication
+import com.example.popshelf.R
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.useCases.GetMediaUseCase
 import com.example.popshelf.presentation.MediaType
@@ -20,7 +21,6 @@ import kotlinx.coroutines.launch
 
 /***
  * Viewmodel class for preserving and requesting data for SearchViewModel
- * @author David Bolko
  * @property getMediaUseCase - use case class, which contact correct work repository based on selected media type.
  * @property networkMonitor - class which observe network status of the device.
  */
@@ -83,7 +83,7 @@ class SearchViewModel(private val getMediaUseCase: GetMediaUseCase, private val 
                 val currentItems = (_uiState.value as? UIState.Success)?.data ?: emptyList()
                 _uiState.value = UIState.Success(currentItems + newItems)
             } catch (e: Exception) {
-                _uiState.value = UIState.Error("Chyba pri načítaní ďalších výsledkov.")
+                _uiState.value = UIState.Error(R.string.search_more_error)
             }
             isLoadingMore = false
         }
@@ -96,11 +96,14 @@ class SearchViewModel(private val getMediaUseCase: GetMediaUseCase, private val 
             val items = getMediaUseCase.execute(type, query, page = currentPage)
             _uiState.value = UIState.Success(items)
         } catch (e: Exception) {
-            _uiState.value = UIState.Error("Chyba pri načítaní.")
+            _uiState.value = UIState.Error(R.string.search_error)
         }
     }
 
     companion object {
+        /**
+         * Factory for creating [SearchViewModel] with dependencies from [PopshelfApplication].
+         **/
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer

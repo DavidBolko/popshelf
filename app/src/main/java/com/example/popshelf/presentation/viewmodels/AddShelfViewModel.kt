@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.popshelf.PopshelfApplication
-import com.example.popshelf.domain.repository.ShelfRepositary
+import com.example.popshelf.R
+import com.example.popshelf.domain.repository.IShelfRepository
 import com.example.popshelf.presentation.UIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,10 +19,9 @@ import kotlinx.coroutines.launch
 
 /***
  * Viewmodel class for preserving and requesting data for AddShelf Screen
- * @author David Bolko
- * @property shelfRepositary - repository which access local shelves and is able to manipulate them.
+ * @property IShelfRepository - repository which access local shelves and is able to manipulate them.
  */
-class AddShelfViewModel(private val shelfRepositary: ShelfRepositary): ViewModel() {
+class AddShelfViewModel(private val IShelfRepository: IShelfRepository): ViewModel() {
     private val _state = MutableStateFlow<UIState<Unit>>(UIState.Loading)
     val state: StateFlow<UIState<Unit>> = _state
 
@@ -30,7 +30,6 @@ class AddShelfViewModel(private val shelfRepositary: ShelfRepositary): ViewModel
 
     private val _selectedColorKey = MutableStateFlow<String>("Pink")
     val selectedColorKey: StateFlow<String> = _selectedColorKey.asStateFlow()
-
 
     val isCreationAllowed: StateFlow<Boolean> = _nameState.map { it.isNotBlank() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
@@ -59,22 +58,21 @@ class AddShelfViewModel(private val shelfRepositary: ShelfRepositary): ViewModel
      */
     fun createShelf() {
         viewModelScope.launch {
-            if (nameState.value.isBlank()) {
-                _state.value = UIState.Error("Názov nemôže byť prázdny.")
-                return@launch
-            }
 
             try {
-                shelfRepositary.createShelf(nameState.value, selectedColorKey.value)
+                IShelfRepository.createShelf(nameState.value, selectedColorKey.value)
                 _state.value = UIState.Success(Unit)
                 reset()
             } catch (e: Exception) {
-                _state.value = UIState.Error("Nepodarilo sa vytvoriť poličku.")
+                _state.value = UIState.Error(R.string.shelf_create_error)
             }
         }
     }
 
     companion object {
+        /**
+         * Factory for creating [AddShelfViewModel] with dependencies from [PopshelfApplication].
+         **/
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PopshelfApplication).appContainer

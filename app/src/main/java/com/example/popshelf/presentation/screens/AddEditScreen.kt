@@ -52,7 +52,6 @@ import com.example.popshelf.presentation.viewmodels.AddEditItemViewModel
 
 /***
  * Composable function representing add and edit screen of added or searched work.
- * @author David Bolko
  * @param modifier - modifier for ability to change the look of the composable screen from outside
  * @param nav - navigation controller to allow navigation from this screen or to the next.
  * @param addEditItemViewModel - AddEditItemViewmodel, viewmodel for fetching and preserving data for this screen.
@@ -63,8 +62,8 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
     val media by addEditItemViewModel.mediaItemState.collectAsState()
     var expandedStatus by remember { mutableStateOf(false) }
     var expandedShelf by remember { mutableStateOf(false) }
-    val selectedStatus by addEditItemViewModel.selectedStatus.collectAsState()
-    val selectedShelf by addEditItemViewModel.selectedShelf.collectAsState()
+    val mediaStatus by addEditItemViewModel.mediaStatus.collectAsState()
+    val shelf by addEditItemViewModel.shelf.collectAsState()
     val comment by addEditItemViewModel.comment.collectAsState()
     val rating by addEditItemViewModel.rating.collectAsState()
 
@@ -105,9 +104,9 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                 Column() {
                     ExposedDropdownMenuBox(expanded = expandedStatus, onExpandedChange = { expandedStatus = !expandedStatus }, modifier = Modifier.fillMaxWidth()) {
                         TextField(
-                            value = selectedStatus.title,
+                            value = mediaStatus.title,
                             onValueChange = {},
-                            label = { Text("Stav") },
+                            label = { Text(stringResource(R.string.state)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedStatus) },
                             modifier = Modifier.menuAnchor().fillMaxWidth(),
                             readOnly = true
@@ -126,19 +125,19 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                     }
                     ExposedDropdownMenuBox(expanded = expandedShelf, onExpandedChange = { expandedShelf = !expandedShelf }, modifier = Modifier.fillMaxWidth()) {
                         TextField(
-                            value = selectedShelf,
+                            value = shelf,
                             onValueChange = {},
-                            label = { Text("Shelf") },
+                            label = { Text(stringResource(R.string.choose_shelf)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedShelf) },
                             modifier = Modifier.menuAnchor().fillMaxWidth(),
                             readOnly = true
                         )
                         ExposedDropdownMenu(expanded = expandedShelf, onDismissRequest = { expandedShelf = false }, modifier = Modifier.fillMaxWidth()) {
-                            addEditItemViewModel.shelves.forEach { shelf ->
+                            addEditItemViewModel.getShelves().forEach { shelfName ->
                                 DropdownMenuItem(
-                                    text = { Text(shelf.name) },
+                                    text = { Text(shelfName) },
                                     onClick = dropUnlessResumed {
-                                        addEditItemViewModel.onShelfSelected(shelf.name)
+                                        addEditItemViewModel.onShelfSelected(shelfName)
                                         expandedShelf = false
                                     }
                                 )
@@ -146,7 +145,7 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
                         }
                     }
                 }
-                if(selectedStatus == MediaStatus.FINISHED){
+                if(mediaStatus == MediaStatus.FINISHED){
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Rating(rating, onChangeRating = {addEditItemViewModel.onRatingSelected(it)})
                         Text(stringResource(R.string.comment))
@@ -162,8 +161,8 @@ fun AddScreen(modifier: Modifier = Modifier, nav:NavController, addEditItemViewM
 
 
 fun calculateRating(level: Int, rating: Int): ImageVector{
-    var outlined = Icons.Default.StarOutline
-    var filled = Icons.Default.Star
+    val outlined = Icons.Default.StarOutline
+    val filled = Icons.Default.Star
     if(level <= rating){
         return filled
     }

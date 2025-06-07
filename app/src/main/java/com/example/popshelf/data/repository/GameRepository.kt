@@ -1,6 +1,5 @@
 package com.example.popshelf.data.repository
 
-import android.util.Log
 import com.Secrets
 import com.example.popshelf.data.remote.GameApi
 import com.example.popshelf.data.remote.authService
@@ -10,11 +9,11 @@ import com.example.popshelf.data.toGameEntity
 import com.example.popshelf.data.toMediaItem
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.NetworkStatusProvider
-import com.example.popshelf.domain.repository.GameRepository
+import com.example.popshelf.domain.repository.IGameRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: GameDao, private val networkStatusProvider: NetworkStatusProvider): GameRepository {
+class GameRepository(private val gameApi: GameApi, private val gameDao: GameDao, private val networkStatusProvider: NetworkStatusProvider): IGameRepository {
     override suspend fun getGamesByQuery(query: String, page: Int): List<MediaItem> {
         if (!networkStatusProvider.isOnline() || query.isEmpty()) {
             return gameDao.findByName(query).map { it.toMediaItem() }
@@ -33,10 +32,8 @@ class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: Game
         """.trimIndent().toRequestBody("text/plain".toMediaTypeOrNull())
         )
 
-        // Získaj cover ID z výsledkov
         val coverIds = apiGames.mapNotNull { it.cover }.distinct()
 
-        // Zavolaj cover API len ak sú nejaké ID
         val covers = if (coverIds.isNotEmpty()) {
             gameApi.getCovers(
                 clientId = Secrets.idgb_id,
@@ -49,12 +46,8 @@ class GameRepositoryImpl(private val gameApi: GameApi, private val gameDao: Game
             )
         } else emptyList()
 
-        Log.d("CHECK_GAME", covers.toString())
-        // Map cover ID → image_id
         val coverMap = covers.associateBy { it.id }
-        Log.d("covers", coverMap.toString())
 
-        // Teraz premapuj hry s image_id
         val mediaItems = apiGames.map { game ->
             val imageId = game.cover?.let { coverMap[it]?.imageId }
             game.toMediaItem(imageId)

@@ -16,5 +16,5 @@ sealed class UIEvent{
      * Error state with message which can be displayed.
      * @param message - message which can be displayed as error message.
      */
-    data class Error(val message: String) : UIEvent()
+    data class Error(val message: Int) : UIEvent()
 }

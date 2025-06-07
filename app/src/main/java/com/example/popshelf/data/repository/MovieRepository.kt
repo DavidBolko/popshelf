@@ -7,9 +7,9 @@ import com.example.popshelf.data.remote.tmdbDetailResponse
 import com.example.popshelf.data.toMediaItem
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.domain.NetworkStatusProvider
-import com.example.popshelf.domain.repository.MovieRepository
+import com.example.popshelf.domain.repository.IMovieRepository
 
-class MovieRepositoryImpl(private val tmdbApi: TmdbApiService, private val movieDao: MovieDao, private val networkStatusProvider: NetworkStatusProvider): MovieRepository {
+class MovieRepository(private val tmdbApi: TmdbApiService, private val movieDao: MovieDao, private val networkStatusProvider: NetworkStatusProvider): IMovieRepository {
     override suspend fun getMoviesByQuery(query: String, page: Int): List<MediaItem> {
         return if (!networkStatusProvider.isOnline() || query.isEmpty()) {
             val results: List<MovieEntity> = movieDao.findByName(query)

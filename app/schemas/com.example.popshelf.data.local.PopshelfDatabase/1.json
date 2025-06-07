@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cbc3f8110da06f32c3da20e19809fa87",
+    "identityHash": "8b3d4f5b09dc1f8c46760d572ef32dd4",
     "entities": [
       {
         "tableName": "Books",
@@ -165,7 +165,7 @@
       },
       {
         "tableName": "ShelfItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `itemId` TEXT NOT NULL, `rating` INTEGER NOT NULL, `comment` TEXT, `status` TEXT NOT NULL, `mediaType` TEXT NOT NULL, `shelfId` INTEGER NOT NULL, `defaultShelf` INTEGER NOT NULL, FOREIGN KEY(`shelfId`) REFERENCES `ShelfEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `itemId` TEXT NOT NULL, `rating` INTEGER NOT NULL, `comment` TEXT, `status` TEXT NOT NULL, `mediaType` TEXT NOT NULL, `shelfId` INTEGER, `defaultShelf` INTEGER NOT NULL, FOREIGN KEY(`shelfId`) REFERENCES `ShelfEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -205,8 +205,7 @@
           {
             "fieldPath": "shelfId",
             "columnName": "shelfId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "defaultShelf",
@@ -308,7 +307,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cbc3f8110da06f32c3da20e19809fa87')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b3d4f5b09dc1f8c46760d572ef32dd4')"
     ]
   }
 }

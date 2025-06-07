@@ -9,8 +9,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.popshelf.data.NetworkMonitor
 import com.example.popshelf.PopshelfApplication
+import com.example.popshelf.R
 import com.example.popshelf.domain.MediaItem
-import com.example.popshelf.domain.repository.ShelfItemRepositary
+import com.example.popshelf.domain.repository.IShelfItemRepositary
 import com.example.popshelf.domain.useCases.GetMediaDetailUseCase
 import com.example.popshelf.presentation.MediaType
 import com.example.popshelf.presentation.UIEvent
@@ -23,13 +24,12 @@ import kotlinx.coroutines.launch
 
 /***
  * Viewmodel class for preserving and requesting data for DetailViewModel
- * @author David Bolko
- * @property shelfItemRepositary - repository for items of individual shelves.
+ * @property shelfItemRepository - repository for items of individual shelves.
  * @property getMediaDetailUseCase - use case class, which contact correct repository based on selected media type.
  * @property networkMonitor - class which observe network status of the device.
  * @param savedStateHandle - allows to access navigation arguments.
  */
-class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, private val shelfItemRepositary: ShelfItemRepositary, private val networkMonitor: NetworkMonitor, savedStateHandle: SavedStateHandle): ViewModel() {
+class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, private val shelfItemRepository: IShelfItemRepositary, private val networkMonitor: NetworkMonitor, savedStateHandle: SavedStateHandle): ViewModel() {
     private val detail = MutableStateFlow<UIState<MediaItem>>(UIState.Loading)
     val data: StateFlow<UIState<MediaItem>> = detail
 
@@ -61,7 +61,7 @@ class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, 
                 val item = getMediaDetailUseCase.execute(MediaType.valueOf(mediaType), id)
                 detail.value = UIState.Success(item)
             } catch (e: Exception) {
-                detail.value = UIState.Error("Chyba pri načítaní.")
+                detail.value = UIState.Error(R.string.detail_error)
             }
         }
     }
@@ -73,15 +73,18 @@ class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, 
     fun onDelete(){
         viewModelScope.launch {
             try{
-                shelfItemRepositary.deleteShelfItem(id)
+                shelfItemRepository.deleteShelfItem(id)
                 _state.emit(UIEvent.NavigateBack)
             } catch (e: Exception) {
-                detail.value = UIState.Error("Can't delete a record.")
+                detail.value = UIState.Error(R.string.delete_error)
             }
         }
     }
 
     companion object {
+        /**
+         * Factory for creating [DetailViewModel] with dependencies from [PopshelfApplication].
+         **/
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val savedStateHandle = createSavedStateHandle()

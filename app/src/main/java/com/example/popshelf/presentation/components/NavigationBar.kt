@@ -9,14 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import kotlinx.coroutines.delay
 
 //Definicia route z dokumentácie
 //https://developer.android.com/develop/ui/compose/navigation
@@ -32,7 +29,6 @@ data class AppRoute(val name: String, val route: String, val icons: List<ImageVe
 
 /**
  * Composable function which takes navigation controller and renders the navigation bar of the application.
- * @author David Bolko
  * @param navController - navigation controller to allow navigation from this screen or to the next.
  */
 @Composable

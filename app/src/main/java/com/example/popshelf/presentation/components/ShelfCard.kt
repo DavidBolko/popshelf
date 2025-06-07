@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +32,7 @@ import java.io.File
 
 /**
  * Composable function which renders rating of media work with stars.
- * @author David Bolko
- * @param shelf instance of data class Shelf, which holds all the information about shelf which is going to be displayed.
+ * @param shelf instance of data class [Shelf], which holds all the information about shelf which is going to be displayed.
  * @param nav navigation controller to allow navigation from this screen or to the next.
  */
 @Composable
@@ -67,7 +67,7 @@ fun ShelfCard(shelf: Shelf, nav: NavController) {
 
             Column {
                 Text(text = shelf.name, fontWeight = FontWeight.Bold, maxLines = 1)
-                Text(text = "${shelf.itemCount} items", fontSize = 12.sp)
+                Text(text = "${shelf.itemCount} " + stringResource(R.string.item_count), fontSize = 12.sp)
             }
         }
     }

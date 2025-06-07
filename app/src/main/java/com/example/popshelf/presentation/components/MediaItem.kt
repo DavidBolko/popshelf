@@ -14,27 +14,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.popshelf.R
 import com.example.popshelf.domain.MediaItem
 import com.example.popshelf.presentation.MediaType
 
 
 /**
  * Composable function which renders individual media work items in shelves.
- * @author David Bolko
  * @param item instance of data class MediaItem, which holds all the information which is going to be displayed.
  * @param openDetail lambda function which tells this component what should be done when opening a detail of item.
  * @param mediaType media type of item defined by [MediaType]
  */
 @Composable
-fun MediaItem(item: MediaItem, openDetail: ()->Unit, mediaType: MediaType) {
+fun MediaItem(item: MediaItem, openDetail: ()->Unit) {
     Card(modifier = Modifier.fillMaxWidth().padding(8.dp, 8.dp, 8.dp, bottom = 2.dp).clickable { openDetail() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,

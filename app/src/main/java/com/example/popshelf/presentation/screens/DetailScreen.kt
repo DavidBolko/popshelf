@@ -40,7 +40,6 @@ import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
-import coil.request.ImageRequest
 import com.example.popshelf.R
 import com.example.popshelf.presentation.MediaType
 import com.example.popshelf.presentation.UIEvent
@@ -52,7 +51,6 @@ import com.example.popshelf.presentation.viewmodels.DetailViewModel
 
 /***
  * Composable function representing detail screen of added or searched work.
- * @author David Bolko
  * @param modifier - modifier for ability to change the look of the composable screen from outside
  * @param nav - navigation controller to allow navigation from this screen or to the next.
  * @param detailViewModel - DetailViewmodel, viewmodel for fetching and preserving data for this screen.
@@ -64,7 +62,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
     val state = detailViewModel.data.collectAsState().value
 
     val imageLoader = ImageLoader.Builder(context).components { add(GifDecoder.Factory()) }.build()
-    //val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build()
+    //val image = ImageRequest.Builder(LocalContext.current).data(R.drawable.placeholder).placeholder(R.drawable.placeholder).build() - placeholder image
 
 
     LaunchedEffect(Unit) {
@@ -91,7 +89,7 @@ fun DetailScreen(modifier: Modifier = Modifier, nav: NavController, detailViewMo
 
     Scaffold(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        topBar = { TopAppBar(title = { Text("Detail") },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.detail)) },
             navigationIcon = {
                 /*
                 Používa sa lambda funkcia dropUnlessResumed, ktorá zabezpeči že sa vložena funkcia vykoná

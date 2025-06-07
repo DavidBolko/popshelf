@@ -1,6 +1,7 @@
 package com.example.popshelf
 
 import android.app.Application
+import androidx.activity.result.contract.ActivityResultContracts
 
 /**
  * Custom [Application] class for the whole Popshelf application.
