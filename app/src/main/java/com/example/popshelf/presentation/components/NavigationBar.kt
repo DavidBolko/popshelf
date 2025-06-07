@@ -12,14 +12,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 //Definicia route z dokumentácie
 //https://developer.android.com/develop/ui/compose/navigation
+/**
+ * Represents a navigation route in the application.
+ * @property name display name of the route (example: "Home").
+ * @property route identifier navigation path or identifier (example: "home_screen").
+ * @property icons A list of icons representing the unselected and selected states.
+ * Typically contains two icons: one for the default state and one for the active state.
+ */
 data class AppRoute(val name: String, val route: String, val icons: List<ImageVector>)
 
+
+/**
+ * Composable function which takes navigation controller and renders the navigation bar of the application.
+ * @param navController - navigation controller to allow navigation from this screen or to the next.
+ */
 @Composable
 fun NavigationBar(navController: NavHostController){
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -40,16 +51,17 @@ fun NavigationBar(navController: NavHostController){
                     )
                 },
                 label = { Text(item.name) },
-                selected = currentDestination?.hierarchy?.any { it.route == item.name } == true,
+                selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(navController.graph.startDestinationId) {
                             saveState = true
+                            inclusive = false
                         }
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                },
             )
         }
     }
