@@ -30,5 +30,9 @@ class ShelfRepository(private val shelfDao: ShelfDao): IShelfRepository{
         }
     }
 
+    override suspend fun deleteShelf(id: String) {
+        shelfDao.delete(id)
+    }
+
 
 }

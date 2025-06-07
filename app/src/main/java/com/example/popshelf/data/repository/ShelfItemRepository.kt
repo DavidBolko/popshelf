@@ -72,4 +72,8 @@ class ShelfItemRepository(private val shelfItemDao: ShelfItemDao, private val mo
         }
     }
 
+    override suspend fun deleteItemsFromShelves(ids: List<String>) {
+        shelfItemDao.deleteFromShelves(ids)
+    }
+
 }

@@ -51,4 +51,10 @@ interface IShelfItemRepositary {
      * @param comment user comment.
      */
     suspend fun updateShelfItem(itemId: String, shelfId: Int?, status: String, rating: Int, comment: String)
+
+    /**
+     * Deletes items from shelves by their ids
+     * @param ids list of IDs
+     */
+    suspend fun deleteItemsFromShelves(ids: List<String>)
 }

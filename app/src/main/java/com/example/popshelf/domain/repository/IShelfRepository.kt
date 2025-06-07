@@ -26,4 +26,9 @@ interface IShelfRepository {
      * Creates all system shelves
      */
     suspend fun createDefaultShelves()
+
+    /**
+     * deletes a shelf by it's id
+     */
+    suspend fun deleteShelf(id:String)
 }

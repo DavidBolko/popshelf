@@ -60,7 +60,6 @@ interface ShelfItemDao {
     @Query("UPDATE ShelfItemEntity SET rating = :rating WHERE itemId = :itemId")
     suspend fun updateRating(itemId: String, rating: Int)
 
-
     /**
      * Retrieves a shelf item by its item ID.
      * @return [ShelfItemEntity]
@@ -85,9 +84,15 @@ interface ShelfItemDao {
     suspend fun deleteItem(itemId: String)
 
     /**
-     * Deletes the item only from user-defined shelves (excluding system shelves).
+     * Deletes the item only from user shelves (excluding system shelves).
      * system shelves ids are 1, 2, and 3.
      */
     @Query("delete from ShelfItemEntity where itemId = :itemId and shelfId not in (1,2,3)")
     suspend fun deleteItemFromUserShelf(itemId: String)
+
+    /**
+     * deletes items inside a shelf by their ids
+     */
+    @Query("delete from ShelfItemEntity where itemId in (:ids)")
+    suspend fun deleteFromShelves(ids: List<String>)
 }

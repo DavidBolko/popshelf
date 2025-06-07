@@ -64,4 +64,10 @@ interface ShelfDao {
      */
     @Query("Select * from ShelfEntity where name = :name")
     suspend fun getShelfByName(name: String): ShelfEntity
+
+    /**
+     * deletes a shelf by it's id
+     */
+    @Query("Delete from ShelfEntity where id = :id")
+    suspend fun delete(id: String)
 }
