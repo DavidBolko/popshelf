@@ -19,8 +19,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "RAWG_KEY", "\"$rawgKey\"")
     }
 
     buildTypes {
@@ -81,14 +79,3 @@ kapt {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
 }
-
-val secrets = Properties().apply {
-    val file = rootProject.file("secrets.properties")
-    if (file.exists()) {
-        load(file.inputStream())
-    } else {
-        throw GradleException("secrets.properties not exists")
-    }
-}
-
-val rawgKey = secrets.getProperty("RAWG_KEY") ?: throw GradleException("RAWG_KEY NOT EXISTS")
