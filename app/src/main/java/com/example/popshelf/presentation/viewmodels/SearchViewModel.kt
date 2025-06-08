@@ -19,10 +19,17 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for SearchViewModel
- * @property getMediaUseCase - use case class, which contact correct work repository based on selected media type.
- * @property networkMonitor - class which observe network status of the device.
+/**
+ * ViewModel class for preserving and requesting data for the search screen.
+ *
+ * @property uiState UI state representing the current list of media items or loading/error state.
+ * @property searchQuery current search query typed by the user.
+ * @property searchType currently selected media type (Books, Movies..).
+ * @property isConnected current network connection status from NetworkMonitor.
+ * @constructor creates SearchViewModel with injected use case and network monitor.
+ *
+ * @param getMediaUseCase use case class responsible for providing media items based on selected media type and query.
+ * @param networkMonitor class used to observe network connection status of the device.
  */
 class SearchViewModel(private val getMediaUseCase: GetMediaUseCase, private val networkMonitor: NetworkMonitor) : ViewModel() {
     private val _uiState = MutableStateFlow<UIState<List<MediaItem>>>(UIState.Loading)

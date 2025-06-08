@@ -22,12 +22,20 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for DetailViewModel
- * @property shelfItemRepository - repository for items of individual shelves.
- * @property getMediaDetailUseCase - use case class, which contact correct repository based on selected media type.
- * @property networkMonitor - class which observe network status of the device.
- * @param savedStateHandle - allows to access navigation arguments.
+/**
+ * ViewModel class for preserving and requesting data for the Detail screen.
+ *
+ * @property data UI state containing detailed data of the selected media item.
+ * @property state tells the UI it should navigate or some UI event error happened.
+ * @property isConnected current network connection status observed via NetworkMonitor.
+ * @property mediaType media type name passed via SavedStateHandle (e.g. Books, Movies).
+ * @property fromShelf tells if the detail was opened from a shelf screen.
+ * @constructor creates DetailViewModel with injected use case, repositories and saved state handle.
+ *
+ * @param getMediaDetailUseCase use case used to load detailed media item data from the correct source.
+ * @param shelfItemRepository repository interface for accessing and deleting shelf items.
+ * @param networkMonitor class used to observe network connection status of the device.
+ * @param savedStateHandle used to retrieve navigation arguments such as item ID or media type.
  */
 class DetailViewModel(private val getMediaDetailUseCase: GetMediaDetailUseCase, private val shelfItemRepository: IShelfItemRepositary, private val networkMonitor: NetworkMonitor, savedStateHandle: SavedStateHandle): ViewModel() {
     private val detail = MutableStateFlow<UIState<MediaItem>>(UIState.Loading)

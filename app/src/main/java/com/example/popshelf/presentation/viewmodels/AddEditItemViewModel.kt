@@ -25,16 +25,27 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for AddEditScreen
- * @property IShelfItemRepositary - repository for items of individual shelves.
- * @property  getMediaDetailUseCase - use case class, which contact correct repository based on selected media type.
- * @property  savedStateHandle - allows to access navigation arguments.
- * @property  networkMonitor - class which observe network status of the device.
+/**
+ * ViewModel class for preserving and managing data for the AddEditItem screen.
+ *
+ * @property mediaItemState UI state representing the loaded detail of the media item.
+ * @property mediaStatus current selected status.
+ * @property comment current comment entered by the user.
+ * @property shelf currently selected shelf name.
+ * @property rating current rating selected by the user.
+ * @property state flow of UI events (e.g. error message, navigation).
+ * @property isConnected current network connection status.
+ * @constructor creates AddEditItemViewModel with injected repositories, use case, and saved navigation arguments.
+ *
+ * @param shelfItemRepository repository interface for accessing and deleting shelf items.
+ * @param shelfRepository repository interface for managing shelves.
+ * @param getMediaDetailUseCase use case used to load detailed media item data from the correct source.
+ * @param savedStateHandle used to retrieve navigation arguments such as item ID or media type.
+ * @param networkMonitor class used to observe network connection status of the device.
  */
 class AddEditItemViewModel(
-    private val IShelfItemRepositary: IShelfItemRepositary,
-    private val IShelfRepository: IShelfRepository,
+    private val shelfItemRepository: IShelfItemRepositary,
+    private val shelfRepository: IShelfRepository,
     private val getMediaDetailUseCase: GetMediaDetailUseCase,
     private val savedStateHandle: SavedStateHandle,
     private val networkMonitor: NetworkMonitor
@@ -79,7 +90,7 @@ class AddEditItemViewModel(
             try {
                 val item = getMediaDetailUseCase.execute(MediaType.valueOf(mediaTypeParam), idParam)
 
-                shelves = IShelfRepository.getAllShelves(false)
+                shelves = shelfRepository.getAllShelves(false)
 
                 // Ak režim edit, načítaj existujúci záznam (vyplnený už existujúcimi udajmi)
                 if (isEditParam && shelfIdParam != null) {
@@ -145,9 +156,9 @@ class AddEditItemViewModel(
                 val item = (mediaItemState.value as? UIState.Success)?.data
                 if (item != null) {
                     if (isEditParam) {
-                        IShelfItemRepositary.updateShelfItem(itemId = item.id, shelfId = shelfId, status = mediaStatus.value.title, rating = rating.value, comment = comment.value)
+                        shelfItemRepository.updateShelfItem(itemId = item.id, shelfId = shelfId, status = mediaStatus.value.title, rating = rating.value, comment = comment.value)
                     } else {
-                        IShelfItemRepositary.addShelfItem(id = item.id, mediaType = MediaType.valueOf(mediaTypeParam).title, status = mediaStatus.value.title, rating = rating.value, comment = comment.value.ifEmpty { "" }, shelf = shelf.value)
+                        shelfItemRepository.addShelfItem(id = item.id, mediaType = MediaType.valueOf(mediaTypeParam).title, status = mediaStatus.value.title, rating = rating.value, comment = comment.value.ifEmpty { "" }, shelf = shelf.value)
                     }
                 }
                 _state.emit(UIEvent.NavigateBack)

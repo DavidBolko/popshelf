@@ -17,11 +17,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for AddShelf Screen
- * @property IShelfRepository - repository which access local shelves and is able to manipulate them.
+/**
+ * ViewModel class for preserving and managing UI state for the AddShelf screen.
+ *
+ * @property state UI state representing the result of the shelf creation process.
+ * @property nameState current name input typed by the user.
+ * @property selectedColorKey key representing the selected shelf color.
+ * @property isCreationAllowed tells if the shelf can be created (name is not blank).
+ * @constructor creates AddShelfViewModel with injected shelf repository.
+ *
+ * @param shelfRepository - repository interface used to access and manipulate local shelves.
  */
-class AddShelfViewModel(private val IShelfRepository: IShelfRepository): ViewModel() {
+class AddShelfViewModel(private val shelfRepository: IShelfRepository): ViewModel() {
     private val _state = MutableStateFlow<UIState<Unit>>(UIState.Loading)
     val state: StateFlow<UIState<Unit>> = _state
 
@@ -60,7 +67,7 @@ class AddShelfViewModel(private val IShelfRepository: IShelfRepository): ViewMod
         viewModelScope.launch {
 
             try {
-                IShelfRepository.createShelf(nameState.value, selectedColorKey.value)
+                shelfRepository.createShelf(nameState.value, selectedColorKey.value)
                 _state.value = UIState.Success(Unit)
                 reset()
             } catch (e: Exception) {

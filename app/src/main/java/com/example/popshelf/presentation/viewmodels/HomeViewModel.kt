@@ -14,11 +14,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for HomeViewModel
- * @property IShelfRepository - repository for items of individual shelves.
+/**
+ * ViewModel class for preserving and requesting data for the Home screen.
+ *
+ * @property state UI state representing list of shelves displayed on the home screen.
+ * @property addShelfDialogState is add shelf dialog already open.
+ * @constructor creates HomeViewModel with injected shelf repository.
+ *
+ * @param shelfRepository repository interface for accessing and managing shelves.
  */
-class HomeViewModel(private val IShelfRepository: IShelfRepository) : ViewModel() {
+class HomeViewModel(private val shelfRepository: IShelfRepository) : ViewModel() {
     private val _state = MutableStateFlow<UIState<List<Shelf>>>(UIState.Loading)
     val state: StateFlow<UIState<List<Shelf>>> = _state
 
@@ -32,8 +37,8 @@ class HomeViewModel(private val IShelfRepository: IShelfRepository) : ViewModel(
     private fun fetch(){
         viewModelScope.launch {
             try {
-                IShelfRepository.createDefaultShelves()
-                _state.value = UIState.Success(IShelfRepository.getAllShelves(true))
+                shelfRepository.createDefaultShelves()
+                _state.value = UIState.Success(shelfRepository.getAllShelves(true))
             } catch (e: Exception) {
                 _state.value = UIState.Error(R.string.shelf_error)
             }

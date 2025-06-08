@@ -1,6 +1,5 @@
 package com.example.popshelf.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -22,12 +21,20 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/***
- * Viewmodel class for preserving and requesting data for ShelfViewModel
- * @property getMediaUseCase - use case class, which contact correct work repository based on selected media type.
- * @param networkMonitor - class which observe network status of the device.
+/**
+ * ViewModel class responsible for preserving and requesting data for the Shelf screen.
+ *
+ * @property data ui state containing list of media items loaded from the shelf item repository.
+ * @property state tells the UI it should navigate or some UI event error happened.
+ * @property name shelf name retrieved from SavedStateHandle (nav params).
+ * @property isSystem tells if the shelf is a system shelf or user.
+ * @constructor creates ShelfViewModel with injected repositories and saved state handle (nav params).
+ *
+ * @param shelfItemRepository repository interface for accessing shelf items.
+ * @param shelfRepository repository interface for managing shelves.
+ * @param savedStateHandle class for retrieving navigation arguments.
  */
-class ShelfViewModel(private val shelfItemRepositary: IShelfItemRepositary, private val shelfRepository: IShelfRepository, savedStateHandle: SavedStateHandle) : ViewModel() {
+class ShelfViewModel(private val shelfItemRepository: IShelfItemRepositary, private val shelfRepository: IShelfRepository, savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _data = MutableStateFlow<UIState<List<MediaItem>>>(UIState.Loading)
     val data: StateFlow<UIState<List<MediaItem>>> = _data
 
@@ -41,7 +48,7 @@ class ShelfViewModel(private val shelfItemRepositary: IShelfItemRepositary, priv
     init {
         viewModelScope.launch {
             try {
-                _data.value = UIState.Success(shelfItemRepositary.getShelfItems(id.toInt()))
+                _data.value = UIState.Success(shelfItemRepository.getShelfItems(id.toInt()))
             } catch (e: Exception) {
                 _data.value = UIState.Error(R.string.unexpected_item_error)
             }
@@ -56,7 +63,7 @@ class ShelfViewModel(private val shelfItemRepositary: IShelfItemRepositary, priv
             val itemIds = (_data.value as? UIState.Success)?.data?.map { it.id } ?: return
             viewModelScope.launch {
                 try {
-                    shelfItemRepositary.deleteItemsFromShelves(itemIds)
+                    shelfItemRepository.deleteItemsFromShelves(itemIds)
                     shelfRepository.deleteShelf(id)
                     _state.emit(UIEvent.NavigateBack)
                 } catch (e: Exception) {
